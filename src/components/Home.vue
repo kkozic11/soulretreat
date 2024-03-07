@@ -5,26 +5,44 @@
       Prijavite se ili registrirajte kako biste započeli svoje putovanje prema unutarnjoj ravnoteži.
     </p>
 
-    <h4>Odmorite dušu i pronađite unutarnji mir.</h4>
+    <h4 class="goredesno">Odmorite dušu i pronađite unutarnji mir.</h4>
+     <button @click="goToLogin">Prijava</button>
   
-    <h3>Prijava</h3>
-  
-    <h3>Registracija</h3>
-    
+    <button @click="goToRegistration">Registracija</button>
+
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Home',
   props: {
     msg: String
+  },
+  methods:{
+    goToLogin(){
+      this.$router.push('/login');
+    },
+    goToRegistration(){
+      this.$router.push('/registration');
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style lang="scss">
+
+.goredesno {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 30px;
+}
+
+body {
+  background-image: url('../assets/pozadina.jpg');
+}
 h3 {
   margin: 40px 0 0;
 }
