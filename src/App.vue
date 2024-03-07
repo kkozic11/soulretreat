@@ -1,8 +1,4 @@
 <template>
-  <nav>
-    <router-link to="/">Registracija</router-link> |
-    <router-link to="/login">Prijava</router-link>
-  </nav>
   <router-view/>
 </template>
 
@@ -15,16 +11,4 @@
   color: #ffffff;
 }
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
 </style>
