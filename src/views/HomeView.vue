@@ -1,7 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Dobrodošli u SoulRetreat"/>
+    <h1 class="dobrodosli"> {{msg}} </h1>
   </div>
 </template>
 
@@ -18,5 +17,15 @@ export default {
 </script>
 
 <style scoped>
- /*Moj css kod*/
+.home {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+}
+
+.dobrodosli {
+  font-size: 24px;
+  color: #ffff;
+}
 </style>

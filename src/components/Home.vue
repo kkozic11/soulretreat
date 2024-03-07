@@ -7,7 +7,7 @@
 
     <h4 class="goredesno">Odmorite dušu i pronađite unutarnji mir.</h4>
      <button @click="goToLogin">Prijava</button>
-  
+ 
     <button @click="goToRegistration">Registracija</button>
 
   </div>
@@ -46,6 +46,10 @@ body {
 h3 {
   margin: 40px 0 0;
 }
+p {
+  margin: 250px 0 0;
+}
+
 ul {
   list-style-type: none;
   padding: 0;
