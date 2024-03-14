@@ -27,3 +27,24 @@ id="exampleInputPassword1" placeholder="Password" />
  </div>
  </div>
 </template>
+
+<style scoped>
+
+.about{
+    background-image: url('../assets/pozadina2.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    padding: 20px;
+    border-radius: 10px;
+}
+</style>
