@@ -2,7 +2,7 @@
   <div class="home">
     <div class="content">
       <h1 class="welcome"> Dobrodošli u SoulRetreat </h1>
-      <p class="tekstispod"> Prijavite se i li se registrirajte kako biste započeli svoje putovanje prema unutarnjoj ravnoteži. </p>
+      <p class="tekstispod"> Prijavite se ili se registrirajte kako biste započeli svoje putovanje prema unutarnjoj ravnoteži. </p>
       <div class="buttons">
          <button class ="login" @click="goToLogin"> Prijava </button>
          <button class ="register" @click="goToRegistration"> Registracija </button>
@@ -58,6 +58,8 @@ export default {
 
 .welcome{
   margin-bottom: 20px;
+  font-size: 40px;
+  font-weight: bold;
 }
 
 .tekstispod{
