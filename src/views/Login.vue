@@ -4,16 +4,16 @@
    <form @submit.prevent="submitForm" class="login-form">
      <div class="input-group"> 
       <label class="label"> Korisničko ime: </label>
-      <input type="text" v-model="username" id="username" aria-describedby="Unesi korisnicko ime"/>
+      <input type="text" v-model="username" class="input-field" id="username" aria-describedby="Unesi korisničko ime"/>
      </div>
-    <div class="input-group">
+      <div class="input-group">
       <label class="label"> Lozinka:</label>
-      <input type="password" v-model="password" id="password"/>
+      <input type="password" v-model="password" class="input-field" id="password"/>
     </div>
      <button type="submit">Prijava</button>
+     <p class="reg-text">Niste registrirani? <a href ="link-to-registration" class="register">Registriraj se. </a></p>
    </form>
  </div>
-
 </template>
 
 <script>
@@ -47,57 +47,61 @@ export default {
     align-items: center;
 }
 
-.login-form{
-  padding: 20px;
-  border-radius: 10px;
+.reg-text{
+  font-size: 20px;
+  margin-top: 5px;
+}
+
+.register{
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 5px;
 }
 
 .input-group{
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .label{
-  width: 150px;
-  font-size: 18px;
+  font-size: 20px;
   padding: 8px 12px;
+  color: white;
+  width: 200px;
+  margin-right: 20px;
+  text-align: right;
 }
 
-.input-group{
+.input-field{
   border: none;
   border-radius: 20px;
-  background-color: aquamarine;
+  background-color: #03a3a3;
   color: white;
   padding: 8px 12px;
-  margin-right: 10px;
-}
-
-.input-field:focus{
-  outline: none;
-}
-
-.login-form input{
-  display: block;
-  margin-bottom: 10px;
+  width: 250px;
+  margin-left: 20px;
 }
 
 .login-form button{
   padding: 10px 20px;
   border: none;
-  background-color: aqua;
+  border-radius: 20px;
+  background-color: #03a3a3;
+  margin-bottom: 20px;
   color: #ffff;
-  border-radius: 5px;
-  cursor: pointer; 
-}
-
-.login-form button:hover{
-  background-color: yellow;
+  cursor: pointer;
+  margin-left: 40px;
+  margin-top: 30px;
 }
 
 .naslov{
   font-size: 40px;
   margin-bottom: 80px;
   font-weight: bold;
-  color:rgb(33, 174, 108);
+  color: #03a3a3;
 }
+
 </style>
