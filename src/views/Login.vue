@@ -11,7 +11,7 @@
       <input type="password" v-model="password" class="input-field" id="password"/>
     </div>
      <button type="submit">Prijava</button>
-     <p class="reg-text">Niste registrirani? <a href ="link-to-registration" class="register">Registriraj se. </a></p>
+     <p class="reg-text">Niste registrirani? <router-link to ="/registration" class="register">Registriraj se. </router-link></p>
    </form>
  </div>
 </template>
