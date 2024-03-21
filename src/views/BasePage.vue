@@ -11,12 +11,26 @@
         <span class="icon" @click="navigateTo('odjava')">Odjava</span>
     </div>
  </div>
+    <div class="content">
+        <div class="elipsa">
+            <div class="text-container">
+             <div class="text">Slike</div> 
+             <div class="spacer"></div>
+             <div class="text">Videi</div>
+              <div class="spacer"></div>
+             <div class="text">Glazba</div>
+              <div class="spacer"></div>
+             <div class="text">Citati</div>
+              <div class="spacer"></div>
+            </div>
+    </div>
+ </div>
     <div class ="footer">
         <div class ="footer-inner">
             <div class="footer-text"> SoulRetreat.</div>
         </div>
-    </div>
- </div>
+     </div>
+  </div>
 </div>
 </template>
 
@@ -48,6 +62,24 @@ export default {
 .button-container{
     display: flex;
     justify-content: flex-end;
+}
+
+.content{
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.elipsa{
+    width: 1900px;
+    height: 210px;
+    border-radius: 50px;
+    background-color:#509ff47d;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .header{
@@ -88,4 +120,18 @@ export default {
     cursor: pointer;
 }
 
+.text-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.text{
+    text-align: center;
+    margin: 20px 10px;
+}
+
+
+.spacer{
+    width: 220px;
+}
 </style>
