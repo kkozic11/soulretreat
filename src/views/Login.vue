@@ -10,8 +10,8 @@
       <label class="label"> Lozinka:</label>
       <input type="password" v-model="password" class="input-field" id="password"/>
     </div>
-     <button type="submit">Prijava</button>
-     <p class="reg-text">Niste registrirani? <router-link to ="/registration" class="register">Registriraj se. </router-link></p>
+     <button type="submit" @click="redirectToBasePage">Prijava</button>
+     <p class="reg-text">Niste registrirani? <router-link to="/registration" class="register">Registriraj se. </router-link></p>
    </form>
  </div>
 </template>
@@ -27,6 +27,9 @@ export default {
   methods: {
     submitForm() {
       // Logika za obradu forme
+    },
+    redirectToBasePage(){
+      this.$router.push('/basepage');
     }
   }
 };
