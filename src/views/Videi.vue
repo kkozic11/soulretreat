@@ -38,7 +38,7 @@
                 <p class="video-text">Ljubav je svuda oko nas</p>
             </div>
               <video width="280" height="210" controls>
-            <source src="../assets/Video5.mp4" type="video/mp4">
+            <source src="../assets/Video3.mp4" type="video/mp4">
             </video>
         </div>
     </div>
