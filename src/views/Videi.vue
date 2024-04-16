@@ -38,7 +38,7 @@
                 <p class="video-text">Ljubav je svuda oko nas</p>
             </div>
               <video width="280" height="210" controls>
-            <source src="../assets/Video3.mp4" type="video/mp4">
+            <source src="../assets/Video5.mp4" type="video/mp4">
             </video>
         </div>
     </div>
@@ -114,22 +114,15 @@ export default {
 </script>
 
 <style scoped>
-
-body{
-    background-color: #0f6184;
-    margin: 0;
-    padding: 0;
-}
 .video{
     margin-bottom: 2px;
 }
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
-  grid-auto-rows: auto; 
+  grid-template-columns: repeat(2, 1fr); 
+  grid-auto-rows: minmax(5cm, auto); 
   gap: 10px;
   margin-top: 10px; 
-
 }
 
 .grid-item {
@@ -137,16 +130,8 @@ body{
   justify-content: center;
   align-items: center;
   background-color: #f0f0f0; 
-  border-radius: 20px;
-  height: 250px;
-  overflow: hidden; 
+  border-radius: 20px; 
 }
-.grid-item video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
-}
-
 
 .content {
   flex-direction: column;
@@ -168,6 +153,13 @@ body{
 
 .icon-active{
     text-decoration: white;
+}
+
+.background{
+    background-image: url('../assets/pozadina.jpg'); 
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
 }
 
 .container{
@@ -279,36 +271,26 @@ body{
     grid-template-columns: repeat(3, 1fr);
     grid-auto-rows: minmax(5cm, auto);
     gap: 10px;
-    align-items: center;
+    margin-top: 10px;
 }
 
 .content iframe,
 .content video {
-    width: 100%; 
-    height: auto; 
+    width: 100%; /* Puni širina unutar roditeljskog elementa */
+    height: auto; /* Automatska visina */
     border-radius: 10px;
 }
 
+/* Media upiti za responzivnost */
 @media screen and (max-width: 768px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Prilagođeni raspored za manje zaslone */
     }
 }
 
 @media screen and (max-width: 480px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Prilagođeni raspored za još manje zaslone */
     }
 }
-
-.background {
-    background-color: #0f6184; 
-    min-height: 100vh;
-    background-size: cover; 
-    background-position: center; 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-}
-
 </style>

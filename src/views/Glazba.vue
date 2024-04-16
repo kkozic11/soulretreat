@@ -4,36 +4,76 @@
     <div class="header">
     <div class= "button-container">
         <span class="icon" @click="navigateTo('Slike')">Slike</span>
-        <span class="icon" @click="navigateTo('Videi')">Videi</span>
+        <span class="icon-active" @click="navigateTo('Videi')">Videi</span>
         <span class="icon" @click="navigateTo('Citati')">Citati</span>
         <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
         <span class="icon" @click="navigateTo('Profil')">Profil</span>
         <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
     </div>
+ </div>
+   <div class="grid-container">
+  <div class="grid-item">
+  <div class="content">
+    <div class="glazba-opis">
+    <p class="glazba-text">Sjećanje</p>
     </div>
-    
-    <div class="content">
-        <div class="elipsa">
-             <div class="sredina">
-                <div class="icon-container" @click="navigateTo('Slike')"><img src="../assets/icon photo.png" style="width: 150px"></div>
-                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Videi')"><img src="../assets/icon video.png" style="width: 150px"></div>
-                <div class="spacer"></div>
-                <div class="icon-active" @click="navigateTo('Glazba')"><img src="../assets/icon music.png" style="width: 150px"></div>
-                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Citati')"><img src="../assets/icon quotes.png" style="width: 150px" ></div>
-                 <div class="spacer"></div>
-    </div>  
-     <div class="text-container">
-            <div class="text">Slike</div> 
-            <div class="spacer"></div>
-            <div class="text">Videi</div>
-            <div class="spacer"></div>
-            <div class="text">Glazba</div>
-            <div class="spacer"></div>
-            <div class="text">Citati</div>
-    </div>    
+     <audio width="280" height="210" controls>
+            <source src="../assets/Glazba1.mp3" type="audio/mp3">
+     </audio>
+  </div>
+  </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="glazba-opis">
+                <p class="glazba-text">Spokoj</p>
+            </div>
+             <audio width="280" height="210" controls>
+            <source src="../assets/Glazba2.mp3" type="audio/mp3">
+            </audio>
+        </div>
     </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="glazba-opis">
+                <p class="glazba-text">Ravnoteža</p>
+            </div>
+              <audio width="280" height="210" controls>
+            <source src="../assets/Glazba5.mp3" type="audio/mp3">
+            </audio>
+        </div>
+    </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="glazba-opis">
+                <p class="glazba-text">Radost</p>
+            </div>
+              <audio width="280" height="210" controls>
+            <source src="../assets/Glazba4.mp3" type="audio/mp3">
+            </audio>
+        </div>
+    </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="glazba-opis">
+                <p class="glazba-text">Sreća</p>
+            </div>
+              <audio width="280" height="210" controls>
+            <source src="../assets/Glazba5.mp3" type="audio/mp3">
+            </audio>
+        </div>
+    </div>
+
+    <div class="grid-item">
+        <div class="content">
+            <div class="glazba-opis">
+                <p class="glazba-text">Mir</p>
+            </div>
+             <audio width="280" height="210" controls>
+            <source src="../assets/Glazba6.mp3" type="audio/mp3">
+            </audio>
+        </div>
+    </div>
+</div>
  </div>
     <div class ="footer">
         <div class ="footer-inner">
@@ -41,7 +81,6 @@
         </div>
      </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -72,9 +111,45 @@ export default {
 </script>
 
 <style scoped>
+.video{
+    margin-bottom: 2px;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  grid-auto-rows: minmax(5cm, auto); 
+  gap: 10px;
+  margin-top: 10px; 
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; 
+  border-radius: 20px; 
+}
+
+.content {
+  flex-direction: column;
+}
+
+.glazba-text{
+    margin-bottom: 10px;
+}
+
+.content iframe {
+  border-radius: 10px;
+}
+
+.glazba-text {
+  color: #e10996;
+  text-size-adjust: 50;
+  font-weight: bold;
+}
 
 .icon-active{
-    text-decoration: underline;
+    text-decoration: white;
 }
 
 .background{
@@ -186,5 +261,33 @@ export default {
 
 .spacer{
     width: 150px;
+}
+
+.grid-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(5cm, auto);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.content iframe,
+.content glazba {
+    width: 100%; /* Puni širina unutar roditeljskog elementa */
+    height: auto; /* Automatska visina */
+    border-radius: 10px;
+}
+
+/* Media upiti za responzivnost */
+@media screen and (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Prilagođeni raspored za manje zaslone */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Prilagođeni raspored za još manje zaslone */
+    }
 }
 </style>

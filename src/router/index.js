@@ -62,14 +62,7 @@ const routes = [
     path: '/registration',
     name: 'Registration',
     component: Registration  
-  },
-  {
-    path: '/basepage',
-    name: 'BasePage',
-    component: BasePage
   }
-    
-  
 ]
 
 const router = createRouter({
