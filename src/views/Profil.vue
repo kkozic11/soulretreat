@@ -7,7 +7,7 @@
         <span class="icon" @click="navigateTo('Videi')">Videi</span>
         <span class="icon" @click="navigateTo('Citati')">Citati</span>
         <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
-        <span class="icon" @click="navigateTo('Profil')">Profil</span>
+        <span class="icon-active" @click="navigateTo('Profil')">Profil</span>
         <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
     </div>
     </div>
@@ -61,7 +61,9 @@ export default {
 </script>
 
 <style scoped>
-
+.icon-active{
+    text-decoration: white;
+}
 .background{
     background-image: url('../assets/pozadina.jpg'); 
     background-size: cover;

@@ -5,7 +5,7 @@
     <div class= "button-container">
         <span class="icon" @click="navigateTo('Slike')">Slike</span>
         <span class="icon" @click="navigateTo('Videi')">Videi</span>
-        <span class="icon" @click="navigateTo('Citati')">Citati</span>
+        <span class="icon-active" @click="navigateTo('Citati')">Citati</span>
         <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
         <span class="icon" @click="navigateTo('Profil')">Profil</span>
         <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
@@ -37,7 +37,7 @@
  </div>
     <div class ="footer">
         <div class ="footer-inner">
-            <div class="footer-text"> SoulRetreat.</div>
+            <div class="footer-text" @click="navigateTo('BasePage')"> SoulRetreat.</div>
         </div>
      </div>
   </div>
@@ -49,11 +49,22 @@ export default {
      methods: {
         navigateTo(route){
              if (route === 'Slike') {
-                this.$router.push('/Slike'); // Navigacija na stranicu 'slike' ako je ikona 'Slike' kliknuta
+                this.$router.push(`/slike`); 
+            } else if (route === 'HomeView') {
+        this.$router.push(`/homeview`);
             } else if (route === 'Videi') {
-        this.$router.push('/videi');
+        this.$router.push(`/videi`);
+        } else if (route === 'Citati') {
+        this.$router.push(`/citati`);
+        } else if (route === `Glazba`) {
+        this.$router.push(`/glazba`);
+        } else if (route === 'Profil') {
+        this.$router.push(`/profil`);
+        } else if (route === 'Odjava') {
+        this.$router.push(`/odjava`);
     } else {
-        this.$router.push('/${route}');
+        this.$router.push(`/${route}`);
+
     }
         }
  }
@@ -62,6 +73,10 @@ export default {
 
 <style scoped>
 
+.icon-active{
+    text-decoration: underline 2pt white;
+
+}
 .background{
     background-image: url('../assets/pozadina.jpg'); 
     background-size: cover;

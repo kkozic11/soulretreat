@@ -3,7 +3,7 @@
  <div class="container">
     <div class="header">
     <div class= "button-container">
-        <span class="icon" @click="navigateTo('slike')">Slike</span>
+        <span class="icon-active" @click="navigateTo('slike')">Slike</span>
         <span class="icon" @click="navigateTo('videi')">Videi</span>
         <span class="icon" @click="navigateTo('citati')">Citati</span>
         <span class="icon" @click="navigateTo('glazba')">Glazba</span>
@@ -51,6 +51,9 @@ setInterval(showNextImage, 5000);
 </script>
 
 <style scoped>
+.icon-active{
+    text-decoration: underline;
+}
 
 .slideshow{
     width: 100vw;

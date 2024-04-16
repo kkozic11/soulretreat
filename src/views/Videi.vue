@@ -1,48 +1,89 @@
 <template>
-<h1>Videi</h1>
 <div class="background">
  <div class="container">
     <div class="header">
     <div class= "button-container">
         <span class="icon" @click="navigateTo('Slike')">Slike</span>
-        <span class="icon" @click="navigateTo('Videi')">Videi</span>
+        <span class="icon-active" @click="navigateTo('Videi')">Videi</span>
         <span class="icon" @click="navigateTo('Citati')">Citati</span>
         <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
         <span class="icon" @click="navigateTo('Profil')">Profil</span>
         <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
     </div>
+ </div>
+   <div class="grid-container">
+  <div class="grid-item">
+  <div class="content">
+    <div class="video-opis">
+    <p class="video-text">Proljeće se budi</p>
     </div>
-    
-    <div class="content">
-        <div class="elipsa">
-             <div class="sredina">
-                <div class="icon-container" @click="navigateTo('Slike')"><img src="../assets/icon photo.png" style="width: 150px"></div>
-                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Registration')"><img src="../assets/icon video.png" style="width: 150px"></div>
-                <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('HomeView')"><img src="../assets/icon music.png" style="width: 150px"></div>
-                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('HomeView')"><img src="../assets/icon quotes.png" style="width: 150px" ></div>
-                 <div class="spacer"></div>
-    </div>  
-     <div class="text-container">
-            <div class="text">Slike</div> 
-            <div class="spacer"></div>
-            <div class="text">Videi</div>
-            <div class="spacer"></div>
-            <div class="text">Glazba</div>
-            <div class="spacer"></div>
-            <div class="text">Citati</div>
-    </div>    
+     <video width="280" height="210" controls>
+            <source src="../assets/Video1.mp4" type="video/mp4">
+     </video>
+  </div>
+  </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="video-opis">
+                <p class="video-text">More i mir</p>
+            </div>
+             <video width="280" height="210" controls>
+            <source src="../assets/Video2.mp4" type="video/mp4">
+            </video>
+        </div>
     </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="video-opis">
+                <p class="video-text">Ljubav je svuda oko nas</p>
+            </div>
+              <video width="280" height="210" controls>
+            <source src="../assets/Video3.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="video-opis">
+                <p class="video-text">I kiša može popraviti dan</p>
+            </div>
+              <video width="280" height="210" controls>
+            <source src="../assets/Video4.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+    <div class="grid-item">
+        <div class="content">
+            <div class="video-opis">
+                <p class="video-text">Toplina srca</p>
+            </div>
+              <video width="280" height="210" controls>
+            <source src="../assets/Video5.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <div class="grid-item">
+        <div class="content">
+            <div class="video-opis">
+                <p class="video-text">Zelenilo, voda i vibracije</p>
+            </div>
+             <video width="280" height="210" controls>
+            <source src="../assets/Video6.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+
+</div>
+      
  </div>
     <div class ="footer">
         <div class ="footer-inner">
-            <div class="footer-text"> SoulRetreat.</div>
+            <div class="footer-text" @click="navigateTo('BasePage')"> SoulRetreat.</div>
         </div>
      </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -50,22 +91,83 @@ export default {
      methods: {
         navigateTo(route){
              if (route === 'Slike') {
-                this.$router.push('/Slike'); // Navigacija na stranicu 'slike' ako je ikona 'Slike' kliknuta
-            } else {
-            this.$router.push('/${route}');
-            }
-     }
+                this.$router.push(`/slike`); 
+            } else if (route === 'HomeView') {
+        this.$router.push(`/homeview`);
+            } else if (route === 'Videi') {
+        this.$router.push(`/videi`);
+        } else if (route === 'Citati') {
+        this.$router.push(`/citati`);
+        } else if (route === `Glazba`) {
+        this.$router.push(`/glazba`);
+        } else if (route === 'Profil') {
+        this.$router.push(`/profil`);
+        } else if (route === 'Odjava') {
+        this.$router.push(`/odjava`);
+    } else {
+        this.$router.push(`/${route}`);
+
+    }
+        }
  }
 }
 </script>
 
 <style scoped>
 
-.background{
-    background-image: url('../assets/pozadina.jpg'); 
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
+body{
+    background-color: #0f6184;
+    margin: 0;
+    padding: 0;
+}
+.video{
+    margin-bottom: 2px;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  grid-auto-rows: auto; 
+  gap: 10px;
+  margin-top: 10px; 
+
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; 
+  border-radius: 20px;
+  height: 250px;
+  overflow: hidden; 
+}
+.grid-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+}
+
+
+.content {
+  flex-direction: column;
+}
+
+.video-text{
+    margin-bottom: 10px;
+}
+
+.content iframe {
+  border-radius: 10px;
+}
+
+.video-text {
+  color: #e10996;
+  text-size-adjust: 50;
+  font-weight: bold;
+}
+
+.icon-active{
+    text-decoration: white;
 }
 
 .container{
@@ -171,4 +273,42 @@ export default {
 .spacer{
     width: 150px;
 }
+
+.grid-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(5cm, auto);
+    gap: 10px;
+    align-items: center;
+}
+
+.content iframe,
+.content video {
+    width: 100%; 
+    height: auto; 
+    border-radius: 10px;
+}
+
+@media screen and (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+    }
+}
+
+.background {
+    background-color: #0f6184; 
+    min-height: 100vh;
+    background-size: cover; 
+    background-position: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+}
+
 </style>

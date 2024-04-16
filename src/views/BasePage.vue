@@ -37,7 +37,7 @@
  </div>
     <div class ="footer">
         <div class ="footer-inner">
-            <div class="footer-text" @click="navigateTo('HomeView')"> SoulRetreat.</div>
+            <div class="footer-text" @click="navigateTo('BasePage')"> SoulRetreat.</div>
         </div>
      </div>
   </div>

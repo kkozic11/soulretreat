@@ -13,8 +13,12 @@ import Odjava from '../views/Odjava.vue';
 const routes = [
   {
     path: '/',
-    name: 'HomeView',
-    component: HomeView
+    component: HomeView,
+  },
+  {
+    path: '/basepage',
+    name: 'BasePage',
+    component: BasePage
   },
   {
     path: '/odjava',

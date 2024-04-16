@@ -19,7 +19,7 @@
                  <div class="spacer"></div>
                 <div class="icon-container" @click="navigateTo('Videi')"><img src="../assets/icon video.png" style="width: 150px"></div>
                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Glazba')"><img src="../assets/icon music.png" style="width: 150px"></div>
+                <div class="icon-active" @click="navigateTo('Glazba')"><img src="../assets/icon music.png" style="width: 150px"></div>
                  <div class="spacer"></div>
                 <div class="icon-container" @click="navigateTo('Citati')"><img src="../assets/icon quotes.png" style="width: 150px" ></div>
                  <div class="spacer"></div>
@@ -37,7 +37,7 @@
  </div>
     <div class ="footer">
         <div class ="footer-inner">
-            <div class="footer-text"> SoulRetreat.</div>
+            <div class="footer-text" @click="navigateTo('BasePage')"> SoulRetreat.</div>
         </div>
      </div>
   </div>
@@ -49,11 +49,22 @@ export default {
      methods: {
         navigateTo(route){
              if (route === 'Slike') {
-                this.$router.push('/Slike'); // Navigacija na stranicu 'slike' ako je ikona 'Slike' kliknuta
+                this.$router.push(`/slike`); 
+            } else if (route === 'HomeView') {
+        this.$router.push(`/homeview`);
             } else if (route === 'Videi') {
-        this.$router.push('/videi');
+        this.$router.push(`/videi`);
+        } else if (route === 'Citati') {
+        this.$router.push(`/citati`);
+        } else if (route === `Glazba`) {
+        this.$router.push(`/glazba`);
+        } else if (route === 'Profil') {
+        this.$router.push(`/profil`);
+        } else if (route === 'Odjava') {
+        this.$router.push(`/odjava`);
     } else {
-        this.$router.push('/${route}');
+        this.$router.push(`/${route}`);
+
     }
         }
  }
@@ -61,6 +72,10 @@ export default {
 </script>
 
 <style scoped>
+
+.icon-active{
+    text-decoration: underline;
+}
 
 .background{
     background-image: url('../assets/pozadina.jpg'); 
