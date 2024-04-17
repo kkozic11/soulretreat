@@ -18,7 +18,7 @@
         </div>
 
         <div class="text-box">
-          <p>"Ovo je tekst"</p>
+          <p class="quote" :style="{ color: 'white' }">{{ quotes[slideIndex].text }}</p>
           <a class="prev" @click="plusSlides(-1)">&#10094;</a>
           <a class="next" @click="plusSlides(1)">&#10095;</a>
           <div class="dots">
@@ -42,11 +42,16 @@ export default {
     return {
       slideIndex: 0,
       quotes: [
-        { text: "Prvi citat", backgroundColor: "#e9c46a" },
-        { text: "Drugi citat", backgroundColor: "#f4a261" },
-        { text: "Treći citat", backgroundColor: "#e76f51" }
+        { text: "“Brod je siguran u luci, ali brod nije izgađen da bi bio u luci…” William H Shedd", backgroundColor: "#145c7b" }, 
+        { text: "“Budi promjena koju želiš vidjeti u svijetu.” Gandhi", backgroundColor: "#e76f51" }, 
+        { text: "“Cijeli svijet se sklanja s puta čovjeku koji zna kuda ide.” Ralph Waldo Emerson", backgroundColor: "#e3d23c" } 
       ]
     };
+  },
+  computed: {
+    currentBackgroundColor() {
+      return this.quotes[this.slideIndex].backgroundColor;
+    }
   },
   methods: {
     navigateTo(route) {
@@ -67,27 +72,89 @@ export default {
       }
     },
     plusSlides(n) {
-      this.showSlides(this.slideIndex += n);
+      this.slideIndex += n;
+      if (this.slideIndex >= this.quotes.length) {
+        this.slideIndex = 0;
+      } else if (this.slideIndex < 0) {
+        this.slideIndex = this.quotes.length - 1;
+      }
+      // Ažuriranje pozadinske boje okvira
+      this.updateBackgroundColor();
     },
     currentSlide(n) {
-      this.showSlides(this.slideIndex = n);
+      this.slideIndex = n;
+      // Ažuriranje pozadinske boje okvira
+      this.updateBackgroundColor();
     },
-    showSlides(n) {
-      if (n >= this.quotes.length) { this.slideIndex = 0 }
-      if (n < 0) { this.slideIndex = this.quotes.length - 1 }
-    }
+    // Nova metoda za ažuriranje pozadinske boje okvira
+    updateBackgroundColor() {
+    const currentQuote = this.quotes[this.slideIndex];
+    const textBox = document.querySelector('.text-box');
+    if (textBox) {
+    textBox.style.backgroundColor = currentQuote.backgroundColor;
+  }
+}
+
   }
 }
 </script>
 
 <style scoped>
-.text-box p {
-  color: white; 
-  font-size: 18px; 
-  margin: center;
-  margin: 0; 
-  text-align: center; 
-  max-width: 80%; 
+
+.text-box {
+  background-color: #145c7b;
+  position: relative;
+  height: 200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.text-box .dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-box .prev,
+.text-box .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 24px;
+  color: black;
+  background-color: transparent;
+  padding: 10px;
+}
+
+.text-box .prev {
+  left: 0;
+}
+
+.text-box .next {
+  right: 0;
+}
+
+.dots {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  margin: 0 5px;
+  background-color: #5b5a5a;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .icon-active{
@@ -114,6 +181,7 @@ export default {
   font-size: 20px;
   margin-top: 5px;
   margin-left: 20%;
+  margin-bottom: 100px;
 }
 .footer{
   background-color: #509ff4;
@@ -146,54 +214,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.text{
-  text-align: center;
-  margin-left: 80px ;
-  margin-bottom: 40px;
-  margin-right: 40px;
-}
-.text-box {
-  position: relative;
-  height: 200px;
-  width: 100%; 
-  margin: 0 auto;
-  background-color: #145c7b; 
-  padding: 20px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
- 
-}
-.prev, .next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 24px;
-  color: black; /* Crna boja */
-  background-color: transparent; /* Transparentna pozadina */
-  padding: 10px;
-}
-.prev {
-  left: 0;
-}
-.next {
-  right: 0;
-}
-.dots {
-  text-align: center;
-  margin-top: 20px;
-}
-.dot {
-  height: 15px;
-  width: 15px;
-  margin: 0 5px;
-  background-color: #5b5a5a; /* Svijetlo sliva boja */
-  border-radius: 50%;
-  display: inline-block;
-  cursor: pointer;
-}
+
 .dot.active {
   background-color: black; /* Crna boja */
 }
