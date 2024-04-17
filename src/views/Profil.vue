@@ -1,177 +1,278 @@
 <template>
-<div class="background">
- <div class="container">
-    <div class="header">
-    <div class= "button-container">
-        <span class="icon" @click="navigateTo('Slike')">Slike</span>
-        <span class="icon" @click="navigateTo('Videi')">Videi</span>
-        <span class="icon" @click="navigateTo('Citati')">Citati</span>
-        <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
-        <span class="icon-active" @click="navigateTo('Profil')">Profil</span>
-        <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
-    </div>
-    </div>
-    
-    <div class="content">
-        <div class="elipsa">
-             <div class="sredina">
-                <div class="icon-container" @click="navigateTo('Slike')"><img src="../assets/icon photo.png" style="width: 150px"></div>
-                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Videi')"><img src="../assets/icon video.png" style="width: 150px"></div>
-                <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Glazba')"><img src="../assets/icon music.png" style="width: 150px"></div>
-                 <div class="spacer"></div>
-                <div class="icon-container" @click="navigateTo('Citati')"><img src="../assets/icon quotes.png" style="width: 150px" ></div>
-                 <div class="spacer"></div>
-    </div>  
-     <div class="text-container">
-            <div class="text">Slike</div> 
-            <div class="spacer"></div>
-            <div class="text">Videi</div>
-            <div class="spacer"></div>
-            <div class="text">Glazba</div>
-            <div class="spacer"></div>
-            <div class="text">Citati</div>
-    </div>    
-    </div>
- </div>
-    <div class ="footer">
-        <div class ="footer-inner">
-            <div class="footer-text"> SoulRetreat.</div>
+  <div class="background">
+    <div class="container">
+      <div class="header">
+        <div class="button-container">
+          <span class="icon" @click="navigateTo('Slike')">Slike</span>
+          <span class="icon" @click="navigateTo('Videi')">Videi</span>
+          <span class="icon" @click="navigateTo('Citati')">Citati</span>
+          <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
+          <span class="icon-active" @click="navigateTo('Profil')">Profil</span>
+          <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
         </div>
-     </div>
+      </div>
+      <h4 class="naslov">Profil</h4>
+      <div class="content">
+        <div class="form-container">
+          <div class="profile-form">
+            <form>
+              <div class="grid-container">
+                <div class="profile-picture">
+                  <div class="image-container">
+                    <div v-if="!imagePreview" class="placeholder"></div>
+                    <img v-else :src="imagePreview" alt="Profile Image" class="profile-preview">
+                  </div>
+                  <div class="button-below-image">
+                    <label for="file-upload" class="profile-image-label">Odaberite sliku</label>
+                    <input type="file" id="file-upload" accept="image/*" style="display: none;" @change="previewImage">
+                  </div>
+                </div>
+                <div class="profile-data">
+                  <div class="form-group">
+                    <label class="input-label" for="username">Korisničko ime:</label>
+                    <input type="text" id="username" name="username" class="rounded-input">
+                    <label class="input-label" for="name">Ime:</label>
+                    <input type="text" id="name" name="name" class="rounded-input">
+                    <label class="input-label" for="surname">Prezime:</label>
+                    <input type="text" id="surname" name="surname" class="rounded-input">
+                    <label class="input-label" for="aboutme">O meni:</label>
+                    <textarea class="textarea" id="aboutme" name="aboutme" rows="4"></textarea>
+                  </div>
+                  <div class="button-group">
+                  <button type="submit" class="save-button">Spremi</button>
+                  <button class="edit-button rounded-button">Uredi</button>
+                  <button class="note-button rounded-button" @click="navigateTo('MojeBiljeske')">Moje bilješke</button>
+                  <button class="gratitude-button rounded-button" @click="navigateTo('DnevnikZahvalnosti')">Moj dnevnik zahvalnosti</button>
+                  <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="footer-inner">
+          <div class="footer-text">SoulRetreat.</div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
 export default {
-     methods: {
-        navigateTo(route){
-             if (route === 'Slike') {
-                this.$router.push('/Slike'); // Navigacija na stranicu 'slike' ako je ikona 'Slike' kliknuta
-            } else if (route === 'Videi') {
+  data() {
+    return {
+      imagePreview: null
+    };
+  },
+  methods: {
+    navigateTo(route) {
+      if (route === 'Slike') {
+        this.$router.push('/Slike');
+      } else if (route === 'Videi') {
         this.$router.push('/videi');
-    } else {
+      } else {
         this.$router.push('/${route}');
+      }
+    },
+    previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.imagePreview = URL.createObjectURL(file);
+      }
+    },
+    openFileUploadDialog() {
+      document.getElementById('file-upload').click();
     }
-        }
- }
+  }
 }
 </script>
 
 <style scoped>
-.icon-active{
-    text-decoration: white;
-}
-.background{
-    background-image: url('../assets/pozadina.jpg'); 
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
+.background {
+  background-color: #c9e3fe;
 }
 
-.container{
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+.form-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: -80px;
 }
 
-.button-container{
-    display: flex;
-    justify-content: flex-end;
+.rounded-input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #509ff4;
+  border-radius: 5px;
+  box-sizing: border-box;
 }
 
-.content{
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.rounded-button {
+  padding: 10px 20px;
+  background-color: #509ff4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.elipsa{
-    width: 1450px;
-    height: 200px;
-    border-radius: 50px;
-    background-color:#509ff47d;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    position: relative;
-}
-
-.sredina{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding-left: 150px;
-    position: relative;
-    z-index: 1;
-}
-
-.icon-container{
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.header{
-    color: white;
-    padding: 10px 20px;
-    font-size: 20px;
-    margin-top: 5px;
-    margin-left: 20%;
-}
-
-.footer{
-    background-color: #509ff4;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-.footer-inner{
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 7px;
-    display: flex;
-    align-items: center;
-    margin-left: 20%;
-}
-
-.footer-text{
-    color: #145c7b;
-    margin-left: auto;
-    font-weight: bold;
-    font-size: 25px;
-}
-
-.icon{
-    margin: 0 10px;
-    cursor: pointer;
-}
-
-.text-container{
-    flex-direction: row;
-    display: flex;
-    justify-content: space-between;
-
-}
-
-.text{
-    text-align: center;
-    margin-left: 80px ;
-    margin-bottom: 40px;
-    margin-right: 40px;
+.rounded-button:hover {
+  background-color: #3c88d1;
 }
 
 
-.spacer{
-    width: 150px;
+.textarea {
+  height: 120px;
 }
+
+.input-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #509ff4;
+  text-align: left;
+}
+
+.input-label + .rounded-input,
+.input-label + .textarea {
+  margin-top: 5px;
+}
+
+.profile-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.profile-picture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #a9ccf0; 
+}
+
+.profile-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-image-label {
+  cursor: pointer;
+  background-color: #509ff4;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.profile-image-label:hover {
+  background-color: #3c88d1;
+}
+
+.naslov {
+  font-weight: bold;
+  text-align: left;
+  margin-top: -20px;
+  color: #509ff4;
+}
+
+.icon-active {
+  text-decoration: white;
+  font-size: 20px;
+  color: #509ff4;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.button-container {
+  margin-top: 5px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer {
+  background-color: #509ff4;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 7px;
+  display: flex;
+  align-items: center;
+}
+
+.footer-text {
+  color: #145c7b;
+  margin-left: auto;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.icon {
+  margin: 0 10px;
+  cursor: pointer;
+  font-size: 20px;
+  color:#509ff4;
+}
+
+.save-button {
+  padding: 10px 20px;
+  background-color: #509ff4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #3c88d1;
+}
+
 </style>
