@@ -31,6 +31,7 @@
     </form>
   </div>
 </template>
+
 <script>
 import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
@@ -54,6 +55,11 @@ export default {
         return;
       }
 
+      if (this.lozinka.length < 6) {
+        this.errorMessage = 'Lozinka mora sadržavati najmanje 6 znakova.';
+        return;
+      }
+
       if (this.lozinka !== this.potvrdaLozinke) {
         this.errorMessage = 'Lozinke se ne podudaraju.';
         return;
@@ -61,26 +67,38 @@ export default {
 
       try {
         const auth = getAuth();
+        
+        
         const userExists = await fetchSignInMethodsForEmail(auth, this.email);
         if (userExists.length > 0) {
-          this.errorMessage = 'Korisnik s ovim e-mailom već postoji.';
+          this.errorMessage = 'Korisnik s ovom e-mail adresom već postoji.';
           return;
         }
 
-        // Provjeri postoji li korisnik s tim korisničkim imenom
+      
         const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
         if (usernameExists) {
           this.errorMessage = 'Korisnik s ovim korisničkim imenom već postoji.';
           return;
         }
 
+        
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log('Registracija uspješna. Korisnički ID:', userCredential.user.uid);
         
         this.$router.push('/login');
       } catch (error) {
         console.error('Greška prilikom registracije:', error.message);
-        this.errorMessage = 'Došlo je do greške prilikom registracije. Molimo pokušajte ponovno.';
+
+        let errorMessage = '';
+        if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'Email adresa je već u upotrebi.';
+        } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'Lozinka mora sadržavati najmanje 6 znakova.';
+        } else {
+          errorMessage = 'Došlo je do greške prilikom registracije. Molimo pokušajte ponovno.';
+        }
+        this.errorMessage = errorMessage;
       }
     },
     async fetchUserByUsername(username) {
@@ -98,6 +116,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style scoped>
