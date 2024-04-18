@@ -80,7 +80,7 @@
  </div>
     <div class ="footer">
         <div class ="footer-inner">
-            <div class="footer-text" @click="navigateTo('BasePage')"> SoulRetreat.</div>
+             <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
      </div>
   </div>
@@ -276,21 +276,20 @@ export default {
 
 .content iframe,
 .content video {
-    width: 100%; /* Puni širina unutar roditeljskog elementa */
-    height: auto; /* Automatska visina */
+    width: 100%; 
+    height: auto; 
     border-radius: 10px;
 }
 
-/* Media upiti za responzivnost */
 @media screen and (max-width: 768px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Prilagođeni raspored za manje zaslone */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
 }
 
 @media screen and (max-width: 480px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Prilagođeni raspored za još manje zaslone */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
     }
 }
 </style>

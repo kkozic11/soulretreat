@@ -41,8 +41,8 @@
                   <div class="button-group">
                   <button type="submit" class="save-button">Spremi</button>
                   <button class="edit-button rounded-button">Uredi</button>
-                  <button class="note-button rounded-button" @click="navigateTo('MojeBiljeske')">Moje bilješke</button>
-                  <button class="gratitude-button rounded-button" @click="navigateTo('DnevnikZahvalnosti')">Moj dnevnik zahvalnosti</button>
+                  <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
+                  <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
                   <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
                   </div>
                 </div>
@@ -53,7 +53,7 @@
       </div>
       <div class="footer">
         <div class="footer-inner">
-          <div class="footer-text">SoulRetreat.</div>
+           <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
       </div>
     </div>
@@ -73,6 +73,12 @@ export default {
         this.$router.push('/Slike');
       } else if (route === 'Videi') {
         this.$router.push('/videi');
+      }  else if (route === 'Biljeske') {
+        this.$router.push('/biljeske');
+       }  else if (route === 'Dnevnik') {
+        this.$router.push('/dnevnik');
+       }  else if (route === 'MojiCitati') {
+        this.$router.push('/mojicitati');
       } else {
         this.$router.push('/${route}');
       }

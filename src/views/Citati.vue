@@ -29,7 +29,7 @@
 
       <div class ="footer">
         <div class ="footer-inner">
-          <div class="footer-text" @click="navigateTo('BasePage')"> SoulRetreat.</div>
+           <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
       </div>
     </div>
@@ -78,15 +78,12 @@ export default {
       } else if (this.slideIndex < 0) {
         this.slideIndex = this.quotes.length - 1;
       }
-      // Ažuriranje pozadinske boje okvira
       this.updateBackgroundColor();
     },
     currentSlide(n) {
       this.slideIndex = n;
-      // Ažuriranje pozadinske boje okvira
       this.updateBackgroundColor();
     },
-    // Nova metoda za ažuriranje pozadinske boje okvira
     updateBackgroundColor() {
     const currentQuote = this.quotes[this.slideIndex];
     const textBox = document.querySelector('.text-box');
@@ -197,7 +194,7 @@ export default {
   padding: 7px;
   display: flex;
   align-items: center;
-  justify-content: center; /* Centriranje sadržaja */
+  justify-content: center; 
 }
 .footer-text{
   color: #145c7b;
@@ -216,10 +213,10 @@ export default {
 }
 
 .dot.active {
-  background-color: black; /* Crna boja */
+  background-color: black; 
 }
 .quote-slide {
-  padding: 20px; /* Dodajte prilagođeni razmak */
+  padding: 20px; 
 }
 .active-slide {
   display: block;

@@ -23,7 +23,7 @@
  </div>
     <div class ="footer">
         <div class ="footer-inner">
-            <div class="footer-text"> SoulRetreat.</div>
+             <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
      </div>
 </template>

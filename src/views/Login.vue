@@ -26,7 +26,6 @@ export default {
   },
   methods: {
     submitForm() {
-      // Logika za obradu forme
     },
     redirectToBasePage(){
       this.$router.push('/basepage');

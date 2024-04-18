@@ -34,7 +34,6 @@ export default {
   },
   methods: {
     submitForm() {
-      // Logika za obradu forme
     }
   }
 };

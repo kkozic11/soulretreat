@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import Login from '../views/Login.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import Login from '../views/Login.vue';
 import Registration from '../views/Registration.vue';
 import BasePage from '../views/BasePage.vue';
 import Slike from '../views/Slike.vue';
@@ -9,6 +9,9 @@ import Citati from '../views/Citati.vue';
 import Glazba from '../views/Glazba.vue';
 import Profil from '../views/Profil.vue';
 import Odjava from '../views/Odjava.vue';
+import Biljeske from '../views/Biljeske.vue'; // ispravljeno ime komponente
+import MojiCitati from '../views/MojiCitati.vue'; // ispravljeno ime komponente
+import Dnevnik from '../views/Dnevnik.vue'; // ispravljeno ime komponente
 
 const routes = [
   {
@@ -16,58 +19,70 @@ const routes = [
     component: HomeView,
   },
   {
+    path: '/biljeske',
+    name: 'Biljeske',
+    component: Biljeske,
+  },
+  {
+    path: '/dnevnik',
+    name: 'Dnevnik',
+    component: Dnevnik,
+  },
+  {
+    path: '/mojicitati',
+    name: 'MojiCitati',
+    component: MojiCitati,
+  },
+  {
     path: '/basepage',
     name: 'BasePage',
-    component: BasePage
+    component: BasePage,
   },
   {
     path: '/odjava',
     name: 'Odjava',
-    component: Odjava
+    component: Odjava,
   },
   {
     path: '/videi',
     name: 'Videi',
-    component: Videi
+    component: Videi,
   },
   {
     path: '/citati',
     name: 'Citati',
-    component: Citati
+    component: Citati,
   },
   {
     path: '/glazba',
     name: 'Glazba',
-    component: Glazba
+    component: Glazba,
   },
   {
     path: '/slike',
     name: 'Slike',
-    component: Slike
+    component: Slike,
   },
   {
     path: '/profil',
     name: 'Profil',
-    component: Profil
+    component: Profil,
   },
   {
     path: '/login',
     name: 'Login',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: Login/* webpackChunkName: "about" */
+    component: Login,
   },
   {
     path: '/registration',
     name: 'Registration',
-    component: Registration  
-  }
-]
+    component: Registration,
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
 export default router;
