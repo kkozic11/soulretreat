@@ -28,14 +28,25 @@
 export default {
   data() {
     return {
+      ime: '',
+      prezime: '',
       username: '',
+      email: '',
       password: ''
     };
   },
   methods: {
     submitForm() {
-    }
+      firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        .then((userCredential) => {
+          this.$router.push('/basepage');
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          console.error(errorMessage);
+        });
   }
+}
 };
 </script>
 

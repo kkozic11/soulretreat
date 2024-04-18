@@ -3,12 +3,12 @@
  <div class="container">
     <div class="header">
     <div class= "button-container">
-        <span class="icon-active" @click="navigateTo('slike')">Slike</span>
-        <span class="icon" @click="navigateTo('videi')">Videi</span>
-        <span class="icon" @click="navigateTo('citati')">Citati</span>
-        <span class="icon" @click="navigateTo('glazba')">Glazba</span>
-        <span class="icon" @click="navigateTo('profil')">Profil</span>
-        <span class="icon" @click="navigateTo('odjava')">Odjava</span>
+        <span class="icon-active" @click="navigateTo('Slike')">Slike</span>
+        <span class="icon" @click="navigateTo('Videi')">Videi</span>
+        <span class="icon" @click="navigateTo('Citati')">Citati</span>
+        <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
+        <span class="icon" @click="navigateTo('Profil')">Profil</span>
+        <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
     </div>
     </div>
     <div class="slideshow-container">
@@ -32,7 +32,24 @@
 export default {
      methods: {
         navigateTo(route){
-            this.$router.push('/${route}');
+             if (route === 'Slike') {
+                this.$router.push(`/slike`); 
+            } else if (route === 'HomeView') {
+        this.$router.push(`/homeview`);
+            } else if (route === 'Videi') {
+        this.$router.push(`/videi`);
+        } else if (route === 'Citati') {
+        this.$router.push(`/citati`);
+        } else if (route === `Glazba`) {
+        this.$router.push(`/glazba`);
+        } else if (route === 'Profil') {
+        this.$router.push(`/profil`);
+        } else if (route === 'Odjava') {
+        this.$router.push(`/odjava`);
+    } else {
+        this.$router.push(`/${route}`);
+
+    }
         }
      },
 mounted(){

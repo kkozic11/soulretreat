@@ -68,21 +68,21 @@ export default {
     };
   },
   methods: {
-    navigateTo(route) {
-      if (route === 'Slike') {
-        this.$router.push('/Slike');
-      } else if (route === 'Videi') {
-        this.$router.push('/videi');
-      }  else if (route === 'Biljeske') {
-        this.$router.push('/biljeske');
-       }  else if (route === 'Dnevnik') {
-        this.$router.push('/dnevnik');
-       }  else if (route === 'MojiCitati') {
-        this.$router.push('/mojicitati');
-      } else {
-        this.$router.push('/${route}');
-      }
-    },
+      navigateTo(route) {
+  if (route === 'Slike') {
+    this.$router.push('/slike');
+  } else if (route === 'Videi') {
+    this.$router.push('/videi');
+  } else if (route === 'Biljeske') {
+    this.$router.push('/biljeske');
+  } else if (route === 'Dnevnik') {
+    this.$router.push('/dnevnik');
+  } else if (route === 'MojiCitati') {
+    this.$router.push('/mojicitati');
+  } else {
+    this.$router.push(`/${route}`);
+  }
+  },
     previewImage(event) {
       const file = event.target.files[0];
       if (file) {
