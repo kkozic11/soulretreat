@@ -34,7 +34,7 @@
 
 <script>
 import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 
 export default {
   data() {
@@ -68,24 +68,24 @@ export default {
       try {
         const auth = getAuth();
         
-        
         const userExists = await fetchSignInMethodsForEmail(auth, this.email);
         if (userExists.length > 0) {
           this.errorMessage = 'Korisnik s ovom e-mail adresom već postoji.';
           return;
         }
 
-      
         const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
         if (usernameExists) {
           this.errorMessage = 'Korisnik s ovim korisničkim imenom već postoji.';
           return;
         }
 
-        
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log('Registracija uspješna. Korisnički ID:', userCredential.user.uid);
         
+  
+        await this.saveUserData(userCredential.user.uid);
+
         this.$router.push('/login');
       } catch (error) {
         console.error('Greška prilikom registracije:', error.message);
@@ -112,10 +112,26 @@ export default {
         console.error('Greška prilikom dohvaćanja korisnika:', error.message);
         return false;
       }
+    },
+    async saveUserData(uid) {
+      try {
+        const db = getFirestore();
+        const usersRef = collection(db, 'users');
+        await addDoc(usersRef, {
+          uid: uid,
+          ime: this.ime,
+          prezime: this.prezime,
+          korisnickoIme: this.korisnickoIme,
+        });
+        console.log('Podaci korisnika spremljeni.');
+      } catch (error) {
+        console.error('Greška prilikom spremanja podataka korisnika:', error.message);
+      }
     }
   }
 };
 </script>
+
 
 
 

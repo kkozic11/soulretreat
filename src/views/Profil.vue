@@ -61,28 +61,81 @@
 </template>
 
 <script>
+import { getAuth, updateProfile } from "firebase/auth";
+import { getFirestore, collection, doc, getDoc } from 'firebase/firestore';
+
 export default {
   data() {
     return {
-      imagePreview: null
+      imagePreview: null,
+      userData: {
+        ime: '',
+        prezime: '',
+        korisnickoIme: '',
+      }
     };
   },
-  methods: {
-      navigateTo(route) {
-  if (route === 'Slike') {
-    this.$router.push('/slike');
-  } else if (route === 'Videi') {
-    this.$router.push('/videi');
-  } else if (route === 'Biljeske') {
-    this.$router.push('/biljeske');
-  } else if (route === 'Dnevnik') {
-    this.$router.push('/dnevnik');
-  } else if (route === 'MojiCitati') {
-    this.$router.push('/mojicitati');
-  } else {
-    this.$router.push(`/${route}`);
-  }
+  mounted() {
+    this.loadUserData();
   },
+  methods: {
+    async loadUserData() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const userData = await this.getUserData(user.uid);
+          this.userData = userData;
+        }
+      } catch (error) {
+        console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
+      }
+    },
+    async getUserData(uid) {
+      try {
+        const db = getFirestore();
+        const userRef = doc(db, 'users', uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          return userDoc.data();
+        } else {
+          console.error('Podaci korisnika ne postoje.');
+          return null;
+        }
+      } catch (error) {
+        console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
+        return null;
+      }
+    },
+    async saveProfileChanges() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          await updateProfile(user, {
+            displayName: this.userData.korisnickoIme,
+          });
+          console.log('Podaci profila su ažurirani.');
+        }
+      } catch (error) {
+        console.error('Greška prilikom ažuriranja podataka profila:', error.message);
+      }
+    },
+    navigateTo(route) {
+      if (route === 'Slike') {
+        this.$router.push('/slike');
+      } else if (route === 'Videi') {
+        this.$router.push('/videi');
+      } else if (route === 'Biljeske') {
+        this.$router.push('/biljeske');
+      } else if (route === 'Dnevnik') {
+        this.$router.push('/dnevnik');
+      } else if (route === 'MojiCitati') {
+        this.$router.push('/mojicitati');
+      } else {
+        this.$router.push(`/${route}`);
+      }
+    },
     previewImage(event) {
       const file = event.target.files[0];
       if (file) {
@@ -95,6 +148,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .background {

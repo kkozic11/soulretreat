@@ -17,17 +17,36 @@
 </template>
 
 <script>
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      errorMessage: ''
     };
   },
   methods: {
-    submitForm() {
+    async submitForm() {
+      try {
+        const auth = getAuth();
+        await signInWithEmailAndPassword(auth, this.username, this.password);
+      
+        this.redirectToBasePage();
+      } catch (error) {
+        console.error('Greška prilikom prijave:', error.message);
+      
+        let errorMessage = '';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+          errorMessage = 'Pogrešno korisničko ime ili lozinka.';
+        } else {
+          errorMessage = 'Došlo je do greške prilikom prijave. Molimo pokušajte ponovno.';
+        }
+        this.errorMessage = errorMessage;
+      }
     },
-    redirectToBasePage(){
+    redirectToBasePage() {
       this.$router.push('/basepage');
     }
   }
