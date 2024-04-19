@@ -4,7 +4,7 @@
     <form @submit.prevent="submitForm" class="login-form">
       <div class="input-group"> 
         <label class="label">Korisničko ime:</label>
-        <input type="text" v-model="username" class="input-field" id="username" aria-describedby="Unesi korisničko ime"/>
+        <input type="text" v-model="username" class="input-field" id="korisnickoIme" aria-describedby="Unesi korisničko ime"/>
       </div>
       <div class="input-group">
         <label class="label">Lozinka:</label>
@@ -19,7 +19,7 @@
 
 <script>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
 export default {
   data() {
@@ -46,7 +46,10 @@ export default {
           return;
         }
         
-        this.redirectToBasePage();
+        // Provjera je li prijava uspješna prije redirekcije
+        if (userCredential && userCredential.user) {
+          this.redirectToBasePage();
+        }
       } catch (error) {
         console.error('Greška prilikom prijave:', error.message);
       
@@ -62,12 +65,11 @@ export default {
     async fetchUserByUsername(username) {
       const db = getFirestore();
       const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('username', '==', username));
+      const q = query(usersRef, where('korisnickoIme', '==', username));
       const querySnapshot = await getDocs(q);
       return !querySnapshot.empty;
     },
     redirectToBasePage() {
-
       this.$router.push('/basepage');
     }
   }
@@ -75,25 +77,25 @@ export default {
 </script>
 
 <style scoped>
-.about{
-    background-image: url('../assets/pozadina2.jpg');
-    background-size: cover;
-    background-position: center;
-    padding: 20px;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.about {
+  background-image: url('../assets/pozadina2.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.reg-text{
+.reg-text {
   font-size: 20px;
   margin-top: 5px;
 }
 
-.register{
+.register {
   color: white;
   text-decoration: none;
   font-weight: bold;
@@ -101,13 +103,13 @@ export default {
   margin-top: 5px;
 }
 
-.input-group{
+.input-group {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.label{
+.label {
   font-size: 20px;
   padding: 8px 12px;
   color: white;
@@ -116,7 +118,7 @@ export default {
   text-align: right;
 }
 
-.input-field{
+.input-field {
   border: none;
   border-radius: 20px;
   background-color: #03a3a3;
@@ -126,7 +128,7 @@ export default {
   margin-left: 20px;
 }
 
-.login-form button{
+.login-form button {
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
@@ -138,7 +140,7 @@ export default {
   margin-top: 30px;
 }
 
-.naslov{
+.naslov {
   font-size: 40px;
   margin-bottom: 80px;
   font-weight: bold;
@@ -146,7 +148,7 @@ export default {
 }
 
 .error-message {
-  color: white bold;
+  color: white;
   font-size: 16px;
   margin-top: 10px;
 }

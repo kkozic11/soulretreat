@@ -1,7 +1,7 @@
 <template>
   <div class="registracija">
     <h1 class="naslov">Registracija u SoulRetreat</h1>
-    <form @submit.prevent="submitForm" class="login-form">
+    <form @submit.prevent="submitForm" class="login-form" action="">
       <div class="input-group">
         <label for="ime" class="label"> Ime: </label>
         <input type="text" v-model="ime" class="input-field" id="ime" aria-describedby="Unesi svoje ime"/>
@@ -11,13 +11,14 @@
         <input type="text" v-model="prezime" class="input-field" id="prezime"/>
       </div>
       <div class="input-group">
-      <label for="korisnickoIme" class="label"> Korisničko ime:</label>
-      <input type="text" v-model="korisnickoIme" class="input-field" id="korisnickoIme"/>
-      <p v-if="usernameExists" class="error-message">Korisnik s ovim korisničkim imenom ili mailom već postoji.</p>
+        <label for="korisnickoIme" class="label"> Korisničko ime:</label>
+        <input type="text" v-model="korisnickoIme" class="input-field" id="korisnickoIme" @change="checkIfUserExists"/>
+        <p v-if="usernameExists" class="error-message">Korisnik s ovim korisničkim imenom ili mailom već postoji.</p>
       </div>
       <div class="input-group">
         <label for="email" class="label"> Email:</label>
-        <input type="email" v-model="email" class="input-field" id="email"/>
+        <input type="email" v-model="email" class="input-field" id="email" @change="checkIfUserExists"/>
+        <p v-if="email && emailError" class="error-message">{{ emailError }}</p>
       </div>
       <div class="input-group">
         <label for="lozinka" class="label"> Lozinka:</label>
@@ -27,7 +28,7 @@
         <label for="potvrdaLozinke" class="label"> Potvrdi lozinku:</label>
         <input type="password" v-model="potvrdaLozinke" class="input-field" id="potvrdaLozinke"/>
       </div>
-      <button type="submit">Registriraj me</button>
+      <button type="submit" :disabled="usernameExists">Registriraj me</button>
       <p class="reg-text">Korisnički račun već imate? <router-link to ="/login" class="login">Prijavite se. </router-link></p>
     </form>
   </div>
@@ -47,14 +48,15 @@ export default {
       lozinka: '',
       potvrdaLozinke: '',
       errorMessage: '',
-      usernameExists: false
+      usernameExists: false,
+      emailError: ''
     };
   },
   methods: {
     async submitForm() {
       console.log('Pokušaj registracije...');
 
-      if (!this.ime || !this.prezime || !this.korisnickoIme || !this.email || !this.lozinka || !this.potvrdaLozinke) {
+      if (!this.areAllFieldsFilled()) {
         this.errorMessage = 'Molimo ispunite sva polja.';
         console.log('Nisu ispunjena sva polja.');
         return;
@@ -96,7 +98,7 @@ export default {
 
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log('Registracija uspješna. Korisnički ID:', userCredential.user.uid);
-
+        this.$router.push('/login');
         await this.saveUserData(userCredential.user.uid);
 
         this.$router.push('/login');
@@ -138,16 +140,37 @@ export default {
         });
         console.log('Podaci korisnika spremljeni.');
         
-        console.log('Preusmjeravam korisnika na basepage');
+        console.log('Preusmjeravanje korisnika na login');
         this.$router.push('/login');
       } catch (error) {
         console.error('Greška prilikom spremanja podataka korisnika:', error.message);
         let errorMessage = '';
       
         this.errorMessage = errorMessage;
-  }
-}
+      }
+    },
+    async checkIfUserExists() {
+      if (!this.areAllFieldsFilled()) {
+        return;
+      }
 
+      if (!isValidEmail(this.email)) {
+        this.emailError = 'Unesite ispravnu e-mail adresu.';
+        return;
+      }
+
+      const emailExists = await fetchSignInMethodsForEmail(getAuth(), this.email);
+      const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
+      
+      if (emailExists.length > 0 || usernameExists) {
+        this.usernameExists = true;
+      } else {
+        this.usernameExists = false;
+      }
+    },
+    areAllFieldsFilled() {
+      return this.ime && this.prezime && this.korisnickoIme && this.email && this.lozinka && this.potvrdaLozinke;
+    }
   }
 };
 </script>
@@ -229,4 +252,3 @@ export default {
   margin-left: 20px; 
 }
 </style>
-
