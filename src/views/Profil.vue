@@ -11,6 +11,7 @@
           <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
         </div>
       </div>
+      <div>{{ userData.ime }}</div>
       <h4 class="naslov">Profil</h4>
       <div class="content">
         <div class="form-container">
@@ -27,14 +28,15 @@
                     <input type="file" id="file-upload" accept="image/*" style="display: none;" @change="previewImage">
                   </div>
                 </div>
+                 
                 <div class="profile-data">
                   <div class="form-group">
                     <label class="input-label" for="username">Korisničko ime:</label>
-                    <input type="text" id="username" name="username" class="rounded-input">
+                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.korisnickoIme" readonly>
                     <label class="input-label" for="name">Ime:</label>
-                    <input type="text" id="name" name="name" class="rounded-input">
+                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.ime" readonly>
                     <label class="input-label" for="surname">Prezime:</label>
-                    <input type="text" id="surname" name="surname" class="rounded-input">
+                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.prezime" readonly>
                     <label class="input-label" for="aboutme">O meni:</label>
                     <textarea class="textarea" id="aboutme" name="aboutme" rows="4"></textarea>
                   </div>
@@ -86,9 +88,7 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
-          
           const userData = await this.getUserData(user.uid);
-         
           this.userData = userData;
         }
       } catch (error) {
@@ -116,17 +116,12 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
-        
           await updateProfile(user, {
             displayName: this.userData.korisnickoIme,
-          
           });
-
-        
           const db = getFirestore();
           const userRef = doc(db, 'users', user.uid);
           await setDoc(userRef, { oMeni: this.userData.oMeni }, { merge: true });
-
           console.log('Podaci profila su ažurirani.');
           this.oMeniEditMode = false; 
         }

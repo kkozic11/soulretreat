@@ -9,9 +9,9 @@ import Citati from '../views/Citati.vue';
 import Glazba from '../views/Glazba.vue';
 import Profil from '../views/Profil.vue';
 import Odjava from '../views/Odjava.vue';
-import Biljeske from '../views/Biljeske.vue'; // ispravljeno ime komponente
-import MojiCitati from '../views/MojiCitati.vue'; // ispravljeno ime komponente
-import Dnevnik from '../views/Dnevnik.vue'; // ispravljeno ime komponente
+import Biljeske from '../views/Biljeske.vue'; 
+import MojiCitati from '../views/MojiCitati.vue';
+import Dnevnik from '../views/Dnevnik.vue';
 
 const routes = [
   {

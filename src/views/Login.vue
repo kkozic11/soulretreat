@@ -1,23 +1,25 @@
 <template>
- <div class="about">
-  <h1 class="naslov">Prijava u SoulRetreat</h1>
-   <form @submit.prevent="submitForm" class="login-form">
-     <div class="input-group"> 
-      <label class="label"> Korisničko ime: </label>
-      <input type="text" v-model="username" class="input-field" id="username" aria-describedby="Unesi korisničko ime"/>
-     </div>
+  <div class="about">
+    <h1 class="naslov">Prijava u SoulRetreat</h1>
+    <form @submit.prevent="submitForm" class="login-form">
+      <div class="input-group"> 
+        <label class="label">Korisničko ime:</label>
+        <input type="text" v-model="username" class="input-field" id="username" aria-describedby="Unesi korisničko ime"/>
+      </div>
       <div class="input-group">
-      <label class="label"> Lozinka:</label>
-      <input type="password" v-model="password" class="input-field" id="password"/>
-    </div>
-     <button type="submit" @click="redirectToBasePage">Prijava</button>
-     <p class="reg-text">Niste registrirani? <router-link to="/registration" class="register">Registriraj se. </router-link></p>
-   </form>
- </div>
+        <label class="label">Lozinka:</label>
+        <input type="password" v-model="password" class="input-field" id="password"/>
+      </div>
+      <button type="submit">Prijava</button>
+      <p class="reg-text">Niste registrirani? <router-link to="/registration" class="register">Registriraj se.</router-link></p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </form>
+  </div>
 </template>
 
 <script>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, query, where, getDocs } from 'firebase/firestore';
 
 export default {
   data() {
@@ -29,10 +31,21 @@ export default {
   },
   methods: {
     async submitForm() {
+      if (!this.username || !this.password) {
+        this.errorMessage = 'Molimo unesite korisničko ime i lozinku.';
+        return;
+      }
+
       try {
         const auth = getAuth();
-        await signInWithEmailAndPassword(auth, this.username, this.password);
+        const userCredential = await signInWithEmailAndPassword(auth, this.username, this.password);
       
+        const usernameExists = await this.fetchUserByUsername(this.username);
+        if (!usernameExists) {
+          this.errorMessage = 'Korisnik s tim korisničkim imenom ne postoji.';
+          return;
+        }
+        
         this.redirectToBasePage();
       } catch (error) {
         console.error('Greška prilikom prijave:', error.message);
@@ -41,12 +54,20 @@ export default {
         if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
           errorMessage = 'Pogrešno korisničko ime ili lozinka.';
         } else {
-          errorMessage = 'Došlo je do greške prilikom prijave. Molimo pokušajte ponovno.';
+          errorMessage = 'Došlo je do greške prilikom prijave ili ste krive podatke unesli. Molimo pokušajte ponovno.';
         }
         this.errorMessage = errorMessage;
       }
     },
+    async fetchUserByUsername(username) {
+      const db = getFirestore();
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', username));
+      const querySnapshot = await getDocs(q);
+      return !querySnapshot.empty;
+    },
     redirectToBasePage() {
+
       this.$router.push('/basepage');
     }
   }
@@ -54,7 +75,6 @@ export default {
 </script>
 
 <style scoped>
-
 .about{
     background-image: url('../assets/pozadina2.jpg');
     background-size: cover;
@@ -123,6 +143,12 @@ export default {
   margin-bottom: 80px;
   font-weight: bold;
   color: #03a3a3;
+}
+
+.error-message {
+  color: white bold;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 </style>

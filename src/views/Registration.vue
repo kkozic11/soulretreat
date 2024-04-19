@@ -11,8 +11,9 @@
         <input type="text" v-model="prezime" class="input-field" id="prezime"/>
       </div>
       <div class="input-group">
-        <label for="korisnickoIme" class="label"> Korisničko ime:</label>
-        <input type="text" v-model="korisnickoIme" class="input-field" id="korisnickoIme"/>
+      <label for="korisnickoIme" class="label"> Korisničko ime:</label>
+      <input type="text" v-model="korisnickoIme" class="input-field" id="korisnickoIme"/>
+      <p v-if="usernameExists" class="error-message">Korisnik s ovim korisničkim imenom ili mailom već postoji.</p>
       </div>
       <div class="input-group">
         <label for="email" class="label"> Email:</label>
@@ -45,45 +46,57 @@ export default {
       email: '',
       lozinka: '',
       potvrdaLozinke: '',
-      errorMessage: ''
+      errorMessage: '',
+      usernameExists: false
     };
   },
   methods: {
     async submitForm() {
+      console.log('Pokušaj registracije...');
+
       if (!this.ime || !this.prezime || !this.korisnickoIme || !this.email || !this.lozinka || !this.potvrdaLozinke) {
         this.errorMessage = 'Molimo ispunite sva polja.';
+        console.log('Nisu ispunjena sva polja.');
         return;
       }
 
       if (this.lozinka.length < 6) {
         this.errorMessage = 'Lozinka mora sadržavati najmanje 6 znakova.';
+        console.log('Lozinka mora sadržavati najmanje 6 znakova.');
         return;
       }
 
       if (this.lozinka !== this.potvrdaLozinke) {
         this.errorMessage = 'Lozinke se ne podudaraju.';
+        console.log('Lozinke se ne podudaraju.');
         return;
       }
 
       try {
         const auth = getAuth();
         
-        const userExists = await fetchSignInMethodsForEmail(auth, this.email);
-        if (userExists.length > 0) {
+        const emailExists = await fetchSignInMethodsForEmail(auth, this.email);
+        if (emailExists.length > 0) {
           this.errorMessage = 'Korisnik s ovom e-mail adresom već postoji.';
+          console.log('Korisnik s ovom e-mail adresom već postoji.');
           return;
         }
 
         const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
+        console.log('Provjerava postojanje korisničkog imena...');
+        console.log('Korisničko ime postoji:', usernameExists);
+        
         if (usernameExists) {
-          this.errorMessage = 'Korisnik s ovim korisničkim imenom već postoji.';
+          console.log('Korisnik s ovim korisničkim imenom već postoji.');
+          this.usernameExists = true; 
           return;
+        } else {
+          this.usernameExists = false; 
         }
 
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log('Registracija uspješna. Korisnički ID:', userCredential.user.uid);
-        
-  
+
         await this.saveUserData(userCredential.user.uid);
 
         this.$router.push('/login');
@@ -105,7 +118,7 @@ export default {
       try {
         const db = getFirestore();
         const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('username', '==', username));
+        const q = query(usersRef, where('korisnickoIme', '==', username));
         const querySnapshot = await getDocs(q);
         return !querySnapshot.empty;
       } catch (error) {
@@ -115,25 +128,29 @@ export default {
     },
     async saveUserData(uid) {
       try {
-        const db = getFirestore();
-        const usersRef = collection(db, 'users');
+       const db = getFirestore();
+       const usersRef = collection(db, 'users');
         await addDoc(usersRef, {
-          uid: uid,
-          ime: this.ime,
-          prezime: this.prezime,
-          korisnickoIme: this.korisnickoIme,
+        uid: uid,
+        ime: this.ime,
+        prezime: this.prezime,
+        korisnickoIme: this.korisnickoIme,
         });
         console.log('Podaci korisnika spremljeni.');
+        
+        console.log('Preusmjeravam korisnika na basepage');
+        this.$router.push('/login');
       } catch (error) {
         console.error('Greška prilikom spremanja podataka korisnika:', error.message);
-      }
-    }
+        let errorMessage = '';
+      
+        this.errorMessage = errorMessage;
+  }
+}
+
   }
 };
 </script>
-
-
-
 
 <style scoped>
 .registracija {
@@ -171,7 +188,6 @@ export default {
 
 .label {
   font-size: 25px;
-  /* padding: 8px 12px; Remove padding */
   color: white;
   width: 200px;
   margin-right: 20px;
@@ -206,4 +222,11 @@ export default {
   font-weight: bold;
   color: #03a3a3;
 }
+
+.error-message {
+  color: red;
+  font-size: 16px; 
+  margin-left: 20px; 
+}
 </style>
+
