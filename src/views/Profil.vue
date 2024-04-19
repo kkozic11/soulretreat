@@ -62,7 +62,7 @@
 
 <script>
 import { getAuth, updateProfile } from "firebase/auth";
-import { getFirestore, collection, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 
 export default {
   data() {
@@ -72,7 +72,9 @@ export default {
         ime: '',
         prezime: '',
         korisnickoIme: '',
-      }
+        oMeni: '', 
+      },
+      oMeniEditMode: false 
     };
   },
   mounted() {
@@ -84,7 +86,9 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
+          
           const userData = await this.getUserData(user.uid);
+         
           this.userData = userData;
         }
       } catch (error) {
@@ -112,14 +116,26 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
+        
           await updateProfile(user, {
             displayName: this.userData.korisnickoIme,
+          
           });
+
+        
+          const db = getFirestore();
+          const userRef = doc(db, 'users', user.uid);
+          await setDoc(userRef, { oMeni: this.userData.oMeni }, { merge: true });
+
           console.log('Podaci profila su ažurirani.');
+          this.oMeniEditMode = false; 
         }
       } catch (error) {
         console.error('Greška prilikom ažuriranja podataka profila:', error.message);
       }
+    },
+    toggleOMeniEditMode() {
+      this.oMeniEditMode = !this.oMeniEditMode;
     },
     navigateTo(route) {
       if (route === 'Slike') {
@@ -148,6 +164,7 @@ export default {
   }
 }
 </script>
+
 
 
 <style scoped>
