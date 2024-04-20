@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { getAuth } from 'firebase/auth'; 
-
+import { getAuth } from 'firebase/auth';
 
 import HomeView from '../views/HomeView.vue';
 import Login from '../views/Login.vue';
@@ -88,10 +87,10 @@ const router = createRouter({
   routes,
 });
 
-
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const auth = getAuth(); 
-  const isAuthenticated = auth.currentUser !== null; 
+  const user = auth.currentUser;
+  const isAuthenticated = user !== null; 
 
   if (to.name !== 'Login' && to.name !== 'Registration' && !isAuthenticated) {
     next('/login');

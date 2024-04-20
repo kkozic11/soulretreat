@@ -3,12 +3,12 @@
     <div class="container">
       <div class="header">
         <div class="button-container">
-          <span class="icon" @click="navigateTo('Slike')">Slike</span>
-          <span class="icon" @click="navigateTo('Videi')">Videi</span>
-          <span class="icon" @click="navigateTo('Citati')">Citati</span>
-          <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
-          <span class="icon-active" @click="navigateTo('Profil')">Profil</span>
-          <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
+          <router-link :to="{ name: 'Slike' }" class="icon">Slike</router-link>
+          <router-link :to="{ name: 'Videi' }" class="icon">Videi</router-link>
+          <router-link :to="{ name: 'Citati' }" class="icon">Citati</router-link>
+          <router-link :to="{ name: 'Glazba' }" class="icon">Glazba</router-link>
+          <router-link :to="{ name: 'Profil' }" class="icon-active">Profil</router-link>
+          <router-link :to="{ name: 'Odjava' }" class="icon">Odjava</router-link>
         </div>
       </div>
       <h4 class="naslov">Profil</h4>
@@ -31,21 +31,21 @@
                 <div class="profile-data">
                   <div class="form-group">
                     <label class="input-label" for="username">Korisničko ime:</label>
-                    <input type="text" id="username" name="username" class="rounded-input" v-model="userData.korisnickoIme" readonly>
+                    <input type="text" id="username" name="username" class="rounded-input" v-model="userData.korisnickoIme" readonly autocomplete="username">
                     <label class="input-label" for="name">Ime:</label>
-                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.ime" :readonly="!isEditMode">
+                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.ime" :readonly="!isEditMode" autocomplete="given-name">
                     <label class="input-label" for="surname">Prezime:</label>
-                    <input type="text" id="surname" name="surname" class="rounded-input" v-model="userData.prezime" :readonly="!isEditMode">
+                    <input type="text" id="surname" name="surname" class="rounded-input" v-model="userData.prezime" :readonly="!isEditMode" autocomplete="family-name">
                     <label class="input-label" for="about">O meni:</label>
-                    <textarea id="about" name="about" class="rounded-textarea" v-model="userData.oMeni" :readonly="!isEditMode"></textarea>
+                    <textarea id="about" name="about" class="rounded-textarea" v-model="userData.oMeni" :readonly="!isEditMode" autocomplete="off"></textarea>
                   </div>
                   <div class="button-group">
-                    <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
-                    <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
-                    <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
+                    <router-link :to="{ name: 'Biljeske' }" class="note-button rounded-button">Moje bilješke</router-link>
+                    <router-link :to="{ name: 'Dnevnik' }" class="gratitude-button rounded-button">Moj dnevnik zahvalnosti</router-link>
+                    <router-link :to="{ name: 'MojiCitati' }" class="quote-button rounded-button">Moji citati</router-link>
                 
-                    <button v-if="!isEditMode" class="edit-button rounded-button" @click="toggleEditMode">Uredi</button>
-                    <button v-else class="save-button rounded-button" @click="saveProfileChanges">Spremi promjene</button>
+                    <button v-if="!isEditMode" type="button" class="edit-button rounded-button" @click="toggleEditMode">Uredi</button>
+                    <button v-else type="submit" class="save-button rounded-button">Spremi promjene</button>
                   </div>
                 </div>
               </div>
@@ -63,9 +63,8 @@
 </template>
 
 <script>
-import { auth, db } from '@/firebase';
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 export default {
@@ -91,29 +90,29 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
-          const userData = await this.getUserData(user.email);
-          this.userData = userData;
-        }
-      } catch (error) {
-        console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
-      }
-    },
-    async getUserData(email) {
-      try {
-        const db = getFirestore();
-        const usersCollection = collection(db, 'users');
-        const querySnapshot = await usersCollection.where('email', '==', email).get();
+          const db = getFirestore();
+          const usersCollection = collection(db, 'users');
+          const q = query(usersCollection, where('email', '==', user.identifer));
+          const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data();
-          return userData;
+          if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            this.userData = {
+              korisnickoIme: userData.korisnickoIme || 'kkozic',
+              ime: userData.ime || 'Katarina',
+              prezime: userData.prezime || 'Kozić',
+              oMeni: userData.oMeni || 'Studentica Fakulteta informatike u Puli. Nastavni smjer informatike.',
+              profileImage: userData.profileImage || '../assets/pozadina.jpg'
+            };
+            this.imagePreview = userData.profileImage || '';
+          } else {
+            console.error('Korisnik s ovim emailom ne postoji u bazi.');
+          }
         } else {
-          console.error('Korisnik s ovim emailom ne postoji.');
-          return null;
+          console.error('Korisnik nije prijavljen.');
         }
       } catch (error) {
         console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
-        return null;
       }
     },
     async saveProfileChanges() {
@@ -122,7 +121,7 @@ export default {
         const user = auth.currentUser;
         if (user) {
           const db = getFirestore();
-          const userRef = doc(db, 'users', user.uid);
+          const userRef = doc(db, 'users', user.identifer);
           await setDoc(userRef, {
             ime: this.userData.ime,
             prezime: this.userData.prezime,
@@ -153,7 +152,7 @@ export default {
             await uploadString(storageRef, reader.result, 'data_url');
             const imageUrl = await getDownloadURL(storageRef);
             this.userData.profileImage = imageUrl;
-            this.imagePreview = imageUrl; 
+            this.imagePreview = imageUrl;
           }
         } catch (error) {
           console.error('Greška prilikom spremanja slike:', error.message);
@@ -164,7 +163,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 
