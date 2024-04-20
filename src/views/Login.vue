@@ -44,6 +44,9 @@ export default {
         const auth = getAuth(app); 
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log("Uspešna prijava. Korisnički ID:", userCredential.user.uid);
+  
+        localStorage.setItem('userStatus', '1');
+        
         this.$router.push('/basepage');
       } catch (error) {
         console.error("Greška prilikom prijave:", error.message);
@@ -60,6 +63,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .about {

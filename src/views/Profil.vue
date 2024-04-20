@@ -3,12 +3,12 @@
     <div class="container">
       <div class="header">
         <div class="button-container">
-          <router-link :to="{ name: 'Slike' }" class="icon">Slike</router-link>
-          <router-link :to="{ name: 'Videi' }" class="icon">Videi</router-link>
-          <router-link :to="{ name: 'Citati' }" class="icon">Citati</router-link>
-          <router-link :to="{ name: 'Glazba' }" class="icon">Glazba</router-link>
-          <router-link :to="{ name: 'Profil' }" class="icon-active">Profil</router-link>
-          <router-link :to="{ name: 'Odjava' }" class="icon">Odjava</router-link>
+          <span class="icon" @click="navigateTo('Slike')">Slike</span>
+          <span class="icon" @click="navigateTo('Videi')">Videi</span>
+          <span class="icon" @click="navigateTo('Citati')">Citati</span>
+          <span class="icon" @click="navigateTo('Glazba')">Glazba</span>
+          <span class="icon-active" @click="navigateTo('Profil')">Profil</span>
+          <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
         </div>
       </div>
       <h4 class="naslov">Profil</h4>
@@ -23,29 +23,40 @@
                     <img v-else :src="imagePreview" alt="Profile Image" class="profile-preview">
                   </div>
                   <div class="button-below-image">
-                    <label for="file-upload" class="profile-image-label">Odaberite sliku</label>
-                    <input type="file" id="file-upload" accept="image/*" style="display: none;" ref="fileInput" @change="previewImage">
+                    <label for="file-upload" class="profile-image-label" @click="openFileUploadDialog">Odaberite sliku</label>
+                    <input type="file" id="file-upload" accept="image/*" style="display: none;" @change="previewImage">
                   </div>
                 </div>
-
                 <div class="profile-data">
                   <div class="form-group">
                     <label class="input-label" for="username">Korisničko ime:</label>
-                    <input type="text" id="username" name="username" class="rounded-input" v-model="userData.korisnickoIme" readonly autocomplete="username">
+                    <input type="text" id="username" name="username" class="rounded-input" :value="userData && userData.korisnickoIme ? userData.korisnickoIme : ''" :readonly="!oMeniEditMode" autocomplete="username">
+                    
                     <label class="input-label" for="name">Ime:</label>
-                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.ime" :readonly="!isEditMode" autocomplete="given-name">
+                    <input type="text" id="name" name="name" class="rounded-input" :value="userData && userData.ime ? userData.ime : ''" :readonly="!oMeniEditMode" autocomplete="given-name">
+                    
                     <label class="input-label" for="surname">Prezime:</label>
-                    <input type="text" id="surname" name="surname" class="rounded-input" v-model="userData.prezime" :readonly="!isEditMode" autocomplete="family-name">
-                    <label class="input-label" for="about">O meni:</label>
-                    <textarea id="about" name="about" class="rounded-textarea" v-model="userData.oMeni" :readonly="!isEditMode" autocomplete="off"></textarea>
+                    <input type="text" id="surname" name="surname" class="rounded-input" :value="userData && userData.prezime ? userData.prezime : ''" :readonly="!oMeniEditMode" autocomplete="family-name">
+                    
+                    <label class="input-label" for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="rounded-input" :value="userData && userData.email ? userData.email : ''" :readonly="!oMeniEditMode" autocomplete="email">
+                    
+                    <label class="input-label" for="omeni">O meni:</label>
+                    <input type="text" id="omeni" name="omeni" class="rounded-input-omeni" v-if="!oMeniEditMode" v-model="oMeni" autocomplete="description" :readonly="!oMeniEditMode">
+                    <textarea v-else class="textarea large-textarea" id="aboutme" name="aboutme" rows="8" v-model="oMeni" autocomplete="description"></textarea>
                   </div>
                   <div class="button-group">
-                    <router-link :to="{ name: 'Biljeske' }" class="note-button rounded-button">Moje bilješke</router-link>
-                    <router-link :to="{ name: 'Dnevnik' }" class="gratitude-button rounded-button">Moj dnevnik zahvalnosti</router-link>
-                    <router-link :to="{ name: 'MojiCitati' }" class="quote-button rounded-button">Moji citati</router-link>
-                
-                    <button v-if="!isEditMode" type="button" class="edit-button rounded-button" @click="toggleEditMode">Uredi</button>
-                    <button v-else type="submit" class="save-button rounded-button">Spremi promjene</button>
+                    <button v-if="!oMeniEditMode" type="button" class="edit-button rounded-button" @click="toggleOMeniEditMode">Uredi</button>
+                    <button v-else type="submit" class="save-button">Spremi</button>
+                    <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
+                    <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
+                    <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
+                  </div>
+                  <div v-if="isLoggedIn" class="content">
+                   Korisnik je prijavljen.S
+                  </div>
+                  <div v-if="!isLoggedIn" class="login-message">
+                    Korisnik nije prijavljen.
                   </div>
                 </div>
               </div>
@@ -63,26 +74,30 @@
 </template>
 
 <script>
-import { getAuth } from "firebase/auth";
-import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs } from 'firebase/firestore';
-import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { getAuth, updateProfile } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { computed } from "vue";
 
 export default {
   data() {
     return {
-      userData: {
-        korisnickoIme: '',
-        ime: '',
-        prezime: '',
-        oMeni: '',
-        profileImage: ''
-      },
-      isEditMode: false,
-      imagePreview: ''
+      imagePreview: null,
+      userData: null,
+      oMeni: '', 
+      oMeniEditMode: false,
+      status: null
     };
   },
   mounted() {
     this.loadUserData();
+    this.checkLoginStatus();
+  },
+  computed: {
+    isLoggedIn() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      return !!user; 
+    }
   },
   methods: {
     async loadUserData() {
@@ -90,23 +105,12 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
-          const db = getFirestore();
-          const usersCollection = collection(db, 'users');
-          const q = query(usersCollection, where('email', '==', user.identifer));
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            const userData = querySnapshot.docs[0].data();
-            this.userData = {
-              korisnickoIme: userData.korisnickoIme || 'kkozic',
-              ime: userData.ime || 'Katarina',
-              prezime: userData.prezime || 'Kozić',
-              oMeni: userData.oMeni || 'Studentica Fakulteta informatike u Puli. Nastavni smjer informatike.',
-              profileImage: userData.profileImage || '../assets/pozadina.jpg'
-            };
-            this.imagePreview = userData.profileImage || '';
+          const userData = await this.getUserData(user.uid);
+          if (userData) {
+            this.userData = userData;
+            this.oMeni = userData.oMeni || ''; 
           } else {
-            console.error('Korisnik s ovim emailom ne postoji u bazi.');
+            console.error('Podaci korisnika ne postoje.');
           }
         } else {
           console.error('Korisnik nije prijavljen.');
@@ -115,51 +119,76 @@ export default {
         console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
       }
     },
+    async getUserData(uid) {
+      try {
+        const db = getFirestore();
+        const userRef = doc(db, 'userData', uid); 
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          return userDoc.data();
+        } else {
+          console.error('Podaci korisnika ne postoje.');
+          return null;
+        }
+      } catch (error) {
+        console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
+        return null;
+      }
+    },
     async saveProfileChanges() {
       try {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
           const db = getFirestore();
-          const userRef = doc(db, 'users', user.identifer);
+          const userRef = doc(db, 'userData', user.uid); 
           await setDoc(userRef, {
-            ime: this.userData.ime,
-            prezime: this.userData.prezime,
-            korisnickoIme: this.userData.korisnickoIme,
-            oMeni: this.userData.oMeni,
-            profileImage: this.userData.profileImage,
+            korisnickoIme: this.userData ? this.userData.korisnickoIme : '',
+            ime: this.userData ? this.userData.ime : '',
+            prezime: this.userData ? this.userData.prezime : '',
+            email: this.userData ? this.userData.email : '',
+            oMeni: this.oMeni
+          }, { merge: true });
+
+          await updateProfile(user, {
+            displayName: this.userData ? this.userData.korisnickoIme : '',
+            photoURL: '' 
           });
+
           console.log('Podaci profila su ažurirani.');
-          this.isEditMode = false;
+          this.oMeniEditMode = false; 
         }
       } catch (error) {
         console.error('Greška prilikom ažuriranja podataka profila:', error.message);
       }
     },
-    toggleEditMode() {
-      this.isEditMode = !this.isEditMode;
+    toggleOMeniEditMode() {
+      this.oMeniEditMode = !this.oMeniEditMode;
     },
-    async previewImage(event) {
+    navigateTo(route) {
+      if (route === 'Slike') {
+        this.$router.push('/slike');
+      } else if (route === 'Videi') {
+        this.$router.push('/videi');
+      } else if (route === 'Biljeske') {
+        this.$router.push('/biljeske');
+      } else if (route === 'Dnevnik') {
+        this.$router.push('/dnevnik');
+      } else if (route === 'MojiCitati') {
+        this.$router.push('/mojicitati');
+      } else {
+        this.$router.push(`/${route}`);
+      }
+    },
+    previewImage(event) {
       const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const auth = getAuth();
-          const user = auth.currentUser;
-          if (user) {
-            const storage = getStorage();
-            const storageRef = ref(storage, `profile_images/${user.uid}/${file.name}`);
-            await uploadString(storageRef, reader.result, 'data_url');
-            const imageUrl = await getDownloadURL(storageRef);
-            this.userData.profileImage = imageUrl;
-            this.imagePreview = imageUrl;
-          }
-        } catch (error) {
-          console.error('Greška prilikom spremanja slike:', error.message);
-        }
-      };
-      reader.readAsDataURL(file);
+      if (file) {
+        this.imagePreview = URL.createObjectURL(file);
+      }
     },
+    openFileUploadDialog() {
+      document.getElementById('file-upload').click();
+    }
   }
 };
 </script>
@@ -186,8 +215,16 @@ export default {
   box-sizing: border-box;
 }
 
+.rounded-input-omeni{
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #509ff4;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
 .large-textarea {
-  height: 120px;
+  height: 120px; 
 }
 
 .rounded-button {
@@ -349,15 +386,5 @@ export default {
 .save-button:hover {
   background-color: #3c88d1;
 }
-
-.rounded-textarea {
-  padding: 10px;
-  border: 1px solid #509ff4;
-  border-radius: 5px;
-  margin-top: 5px;
-  height: auto;
-  width: 100%;
-  min-height: 120px;
-  background-color: #f9f9f9;
-}
 </style>
+

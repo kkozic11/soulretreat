@@ -91,7 +91,6 @@ export default {
           return;
         }
 
-        // Provjera postoji li korisnik s korisničkim imenom
         const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
         console.log('Provjerava postojanje korisničkog imena...');
         console.log('Korisničko ime postoji:', usernameExists);

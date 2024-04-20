@@ -1,12 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import { app } from './firebase';  
+import { app } from './firebase'; 
 
-const vueApp = createApp(App);
+createApp(App)
+  .use(router)
+  .mount('#app');
 
-vueApp.use(router);
-
-vueApp.config.globalProperties.$firebase = app;
-
-vueApp.mount('#app');
+app;
