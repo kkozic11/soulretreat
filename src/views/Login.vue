@@ -3,12 +3,12 @@
     <h1 class="naslov">Prijava u SoulRetreat</h1>
     <form @submit.prevent="submitForm" class="login-form">
       <div class="input-group"> 
-        <label class="label">E-mail adresa:</label>
-        <input type="email" v-model="email" class="input-field" id="email" aria-describedby="Unesi e-mail adresu"/>
+        <label class="label" for="email">E-mail adresa:</label>
+        <input type="email" v-model="email" class="input-field" id="email" autocomplete="email" aria-describedby="Unesi e-mail adresu"/>
       </div>
       <div class="input-group"> 
-        <label class="label">Lozinka:</label>
-        <input type="password" v-model="lozinka" class="input-field" id="lozinka" aria-describedby="Unesi lozinku"/>
+        <label class="label" for="lozinka">Lozinka:</label>
+        <input type="password" v-model="lozinka" class="input-field" id="lozinka" autocomplete="current-password" aria-describedby="Unesi lozinku"/>
       </div>
       <button type="submit">Prijava</button>
       <p class="reg-text">Niste registrirani? <router-link to="/registration" class="register">Registriraj se.</router-link></p>
@@ -19,6 +19,7 @@
 
 <script>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { app } from '../firebase';
 
 export default {
   data() {
@@ -29,7 +30,9 @@ export default {
     };
   },
   methods: {
-    async submitForm() {
+    async submitForm(event) {
+      event.preventDefault(); 
+      
       console.log("Pokušaj prijave...");
 
       if (!this.email || !this.lozinka) {
@@ -38,7 +41,7 @@ export default {
       }
 
       try {
-        const auth = getAuth();
+        const auth = getAuth(app); 
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log("Uspešna prijava. Korisnički ID:", userCredential.user.uid);
         this.$router.push('/basepage');

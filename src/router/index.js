@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getAuth } from 'firebase/auth'; 
+
+
 import HomeView from '../views/HomeView.vue';
 import Login from '../views/Login.vue';
 import Registration from '../views/Registration.vue';
@@ -83,6 +86,18 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+
+router.beforeEach((to, from, next) => {
+  const auth = getAuth(); 
+  const isAuthenticated = auth.currentUser !== null; 
+
+  if (to.name !== 'Login' && to.name !== 'Registration' && !isAuthenticated) {
+    next('/login');
+  } else {
+    next();
+  }
 });
 
 export default router;

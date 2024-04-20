@@ -11,12 +11,11 @@
           <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
         </div>
       </div>
-      <div>{{ userData.ime }}</div>
       <h4 class="naslov">Profil</h4>
       <div class="content">
         <div class="form-container">
           <div class="profile-form">
-            <form>
+            <form @submit.prevent="saveProfileChanges">
               <div class="grid-container">
                 <div class="profile-picture">
                   <div class="image-container">
@@ -25,27 +24,28 @@
                   </div>
                   <div class="button-below-image">
                     <label for="file-upload" class="profile-image-label">Odaberite sliku</label>
-                    <input type="file" id="file-upload" accept="image/*" style="display: none;" @change="previewImage">
+                    <input type="file" id="file-upload" accept="image/*" style="display: none;" ref="fileInput" @change="previewImage">
                   </div>
                 </div>
-                 
+
                 <div class="profile-data">
                   <div class="form-group">
                     <label class="input-label" for="username">Korisničko ime:</label>
-                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.korisnickoIme" readonly>
+                    <input type="text" id="username" name="username" class="rounded-input" v-model="userData.korisnickoIme" readonly>
                     <label class="input-label" for="name">Ime:</label>
-                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.ime" readonly>
+                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.ime" :readonly="!isEditMode">
                     <label class="input-label" for="surname">Prezime:</label>
-                    <input type="text" id="name" name="name" class="rounded-input" v-model="userData.prezime" readonly>
-                    <label class="input-label" for="aboutme">O meni:</label>
-                    <textarea class="textarea" id="aboutme" name="aboutme" rows="4"></textarea>
+                    <input type="text" id="surname" name="surname" class="rounded-input" v-model="userData.prezime" :readonly="!isEditMode">
+                    <label class="input-label" for="about">O meni:</label>
+                    <textarea id="about" name="about" class="rounded-textarea" v-model="userData.oMeni" :readonly="!isEditMode"></textarea>
                   </div>
                   <div class="button-group">
-                  <button type="submit" class="save-button">Spremi</button>
-                  <button class="edit-button rounded-button">Uredi</button>
-                  <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
-                  <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
-                  <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
+                    <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
+                    <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
+                    <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
+                
+                    <button v-if="!isEditMode" class="edit-button rounded-button" @click="toggleEditMode">Uredi</button>
+                    <button v-else class="save-button rounded-button" @click="saveProfileChanges">Spremi promjene</button>
                   </div>
                 </div>
               </div>
@@ -55,7 +55,7 @@
       </div>
       <div class="footer">
         <div class="footer-inner">
-           <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
+          <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
       </div>
     </div>
@@ -63,20 +63,23 @@
 </template>
 
 <script>
-import { getAuth, updateProfile } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/firebase';
+import { getAuth } from "firebase/auth";
+import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 export default {
   data() {
     return {
-      imagePreview: null,
       userData: {
+        korisnickoIme: '',
         ime: '',
         prezime: '',
-        korisnickoIme: '',
-        oMeni: '', 
+        oMeni: '',
+        profileImage: ''
       },
-      oMeniEditMode: false 
+      isEditMode: false,
+      imagePreview: ''
     };
   },
   mounted() {
@@ -88,22 +91,24 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
-          const userData = await this.getUserData(user.uid);
+          const userData = await this.getUserData(user.email);
           this.userData = userData;
         }
       } catch (error) {
         console.error('Greška prilikom dohvaćanja podataka korisnika:', error.message);
       }
     },
-    async getUserData(uid) {
+    async getUserData(email) {
       try {
         const db = getFirestore();
-        const userRef = doc(db, 'users', uid);
-        const userDoc = await getDoc(userRef);
-        if (userDoc.exists()) {
-          return userDoc.data();
+        const usersCollection = collection(db, 'users');
+        const querySnapshot = await usersCollection.where('email', '==', email).get();
+
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data();
+          return userData;
         } else {
-          console.error('Podaci korisnika ne postoje.');
+          console.error('Korisnik s ovim emailom ne postoji.');
           return null;
         }
       } catch (error) {
@@ -116,53 +121,53 @@ export default {
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
-          await updateProfile(user, {
-            displayName: this.userData.korisnickoIme,
-          });
           const db = getFirestore();
           const userRef = doc(db, 'users', user.uid);
-          await setDoc(userRef, { oMeni: this.userData.oMeni }, { merge: true });
+          await setDoc(userRef, {
+            ime: this.userData.ime,
+            prezime: this.userData.prezime,
+            korisnickoIme: this.userData.korisnickoIme,
+            oMeni: this.userData.oMeni,
+            profileImage: this.userData.profileImage,
+          });
           console.log('Podaci profila su ažurirani.');
-          this.oMeniEditMode = false; 
+          this.isEditMode = false;
         }
       } catch (error) {
         console.error('Greška prilikom ažuriranja podataka profila:', error.message);
       }
     },
-    toggleOMeniEditMode() {
-      this.oMeniEditMode = !this.oMeniEditMode;
+    toggleEditMode() {
+      this.isEditMode = !this.isEditMode;
     },
-    navigateTo(route) {
-      if (route === 'Slike') {
-        this.$router.push('/slike');
-      } else if (route === 'Videi') {
-        this.$router.push('/videi');
-      } else if (route === 'Biljeske') {
-        this.$router.push('/biljeske');
-      } else if (route === 'Dnevnik') {
-        this.$router.push('/dnevnik');
-      } else if (route === 'MojiCitati') {
-        this.$router.push('/mojicitati');
-      } else {
-        this.$router.push(`/${route}`);
-      }
-    },
-    previewImage(event) {
+    async previewImage(event) {
       const file = event.target.files[0];
-      if (file) {
-        this.imagePreview = URL.createObjectURL(file);
-      }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const auth = getAuth();
+          const user = auth.currentUser;
+          if (user) {
+            const storage = getStorage();
+            const storageRef = ref(storage, `profile_images/${user.uid}/${file.name}`);
+            await uploadString(storageRef, reader.result, 'data_url');
+            const imageUrl = await getDownloadURL(storageRef);
+            this.userData.profileImage = imageUrl;
+            this.imagePreview = imageUrl; 
+          }
+        } catch (error) {
+          console.error('Greška prilikom spremanja slike:', error.message);
+        }
+      };
+      reader.readAsDataURL(file);
     },
-    openFileUploadDialog() {
-      document.getElementById('file-upload').click();
-    }
   }
-}
+};
 </script>
 
 
-
 <style scoped>
+
 .background {
   background-color: #c9e3fe;
 }
@@ -183,6 +188,10 @@ export default {
   box-sizing: border-box;
 }
 
+.large-textarea {
+  height: 120px;
+}
+
 .rounded-button {
   padding: 10px 20px;
   background-color: #509ff4;
@@ -190,15 +199,11 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-top: 10px; 
 }
 
 .rounded-button:hover {
   background-color: #3c88d1;
-}
-
-
-.textarea {
-  height: 120px;
 }
 
 .input-label {
@@ -347,4 +352,14 @@ export default {
   background-color: #3c88d1;
 }
 
+.rounded-textarea {
+  padding: 10px;
+  border: 1px solid #509ff4;
+  border-radius: 5px;
+  margin-top: 5px;
+  height: auto;
+  width: 100%;
+  min-height: 120px;
+  background-color: #f9f9f9;
+}
 </style>
