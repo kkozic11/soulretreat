@@ -1,17 +1,18 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAydNtcSIqXNoodGCsfl9Nbi0wWFt-SUbo",
-  authDomain: "soulretreat.firebaseapp.com",
-  projectId: "soulretreat",
-  storageBucket: "soulretreat.appspot.com",
-  messagingSenderId: "177776795016",
-  appId: "1:177776795016:web:aa9538bbe5fa66d1fdae3d"
+  apiKey: "AIzaSyAKqRMRkvfyhEKobFeJqBUINkWnuS1IFAg",
+  authDomain: "soulretreat-9a8c5.firebaseapp.com",
+  projectId: "soulretreat-9a8c5",
+  storageBucket: "soulretreat-9a8c5.appspot.com",
+  messagingSenderId: "222722886686",
+  appId: "1:222722886686:web:a6250338319a11746cb20f"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+export { auth, db };

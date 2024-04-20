@@ -3,12 +3,12 @@
     <h1 class="naslov">Prijava u SoulRetreat</h1>
     <form @submit.prevent="submitForm" class="login-form">
       <div class="input-group"> 
-        <label class="label">Korisničko ime:</label>
-        <input type="text" v-model="username" class="input-field" id="korisnickoIme" aria-describedby="Unesi korisničko ime"/>
+        <label class="label">E-mail adresa:</label>
+        <input type="email" v-model="email" class="input-field" id="email" aria-describedby="Unesi e-mail adresu"/>
       </div>
-      <div class="input-group">
+      <div class="input-group"> 
         <label class="label">Lozinka:</label>
-        <input type="password" v-model="password" class="input-field" id="password"/>
+        <input type="password" v-model="lozinka" class="input-field" id="lozinka" aria-describedby="Unesi lozinku"/>
       </div>
       <button type="submit">Prijava</button>
       <p class="reg-text">Niste registrirani? <router-link to="/registration" class="register">Registriraj se.</router-link></p>
@@ -19,60 +19,42 @@
 
 <script>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-      errorMessage: ''
+      email: "",
+      lozinka: "",
+      errorMessage: "",
     };
   },
   methods: {
     async submitForm() {
-      if (!this.username || !this.password) {
-        this.errorMessage = 'Molimo unesite korisničko ime i lozinku.';
+      console.log("Pokušaj prijave...");
+
+      if (!this.email || !this.lozinka) {
+        this.errorMessage = "Molimo unesite e-mail adresu i lozinku.";
         return;
       }
 
       try {
         const auth = getAuth();
-        const userCredential = await signInWithEmailAndPassword(auth, this.username, this.password);
-      
-        const usernameExists = await this.fetchUserByUsername(this.username);
-        if (!usernameExists) {
-          this.errorMessage = 'Korisnik s tim korisničkim imenom ne postoji.';
-          return;
-        }
-        
-        // Provjera je li prijava uspješna prije redirekcije
-        if (userCredential && userCredential.user) {
-          this.redirectToBasePage();
-        }
+        const userCredential = await signInWithEmailAndPassword(auth, this.email, this.lozinka);
+        console.log("Uspešna prijava. Korisnički ID:", userCredential.user.uid);
+        this.$router.push('/basepage');
       } catch (error) {
-        console.error('Greška prilikom prijave:', error.message);
-      
-        let errorMessage = '';
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-          errorMessage = 'Pogrešno korisničko ime ili lozinka.';
+        console.error("Greška prilikom prijave:", error.message);
+
+        let errorMessage = "";
+        if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+          errorMessage = "Pogrešno korisničko ime ili lozinka.";
         } else {
-          errorMessage = 'Došlo je do greške prilikom prijave ili ste krive podatke unesli. Molimo pokušajte ponovno.';
+          errorMessage = "Došlo je do greške prilikom prijave. Molimo pokušajte ponovo.";
         }
         this.errorMessage = errorMessage;
       }
     },
-    async fetchUserByUsername(username) {
-      const db = getFirestore();
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('korisnickoIme', '==', username));
-      const querySnapshot = await getDocs(q);
-      return !querySnapshot.empty;
-    },
-    redirectToBasePage() {
-      this.$router.push('/basepage');
-    }
-  }
+  },
 };
 </script>
 
@@ -152,5 +134,4 @@ export default {
   font-size: 16px;
   margin-top: 10px;
 }
-
 </style>

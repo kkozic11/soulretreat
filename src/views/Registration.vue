@@ -29,7 +29,7 @@
         <input type="password" v-model="potvrdaLozinke" class="input-field" id="potvrdaLozinke"/>
       </div>
       <button type="submit" :disabled="usernameExists">Registriraj me</button>
-      <p class="reg-text">Korisnički račun već imate? <router-link to ="/login" class="login">Prijavite se. </router-link></p>
+      <p class="reg-text">Korisnički račun već imate? <router-link to="/login" class="login">Prijavite se.</router-link></p>
     </form>
   </div>
 </template>
@@ -98,9 +98,7 @@ export default {
 
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log('Registracija uspješna. Korisnički ID:', userCredential.user.uid);
-        this.$router.push('/login');
         await this.saveUserData(userCredential.user.uid);
-
         this.$router.push('/login');
       } catch (error) {
         console.error('Greška prilikom registracije:', error.message);
@@ -139,13 +137,9 @@ export default {
         korisnickoIme: this.korisnickoIme,
         });
         console.log('Podaci korisnika spremljeni.');
-        
-        console.log('Preusmjeravanje korisnika na login');
-        this.$router.push('/login');
       } catch (error) {
         console.error('Greška prilikom spremanja podataka korisnika:', error.message);
-        let errorMessage = '';
-      
+        let errorMessage = 'Došlo je do greške prilikom spremanja podataka korisnika.';
         this.errorMessage = errorMessage;
       }
     },
@@ -154,7 +148,7 @@ export default {
         return;
       }
 
-      if (!isValidEmail(this.email)) {
+      if (!this.isValidEmail(this.email)) {
         this.emailError = 'Unesite ispravnu e-mail adresu.';
         return;
       }
@@ -167,6 +161,9 @@ export default {
       } else {
         this.usernameExists = false;
       }
+    },
+    isValidEmail(email) {
+      return true; 
     },
     areAllFieldsFilled() {
       return this.ime && this.prezime && this.korisnickoIme && this.email && this.lozinka && this.potvrdaLozinke;
