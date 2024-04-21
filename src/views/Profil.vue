@@ -1,5 +1,4 @@
 <template>
-  <keep-alive>
     <div class="background">
       <div class="container">
         <div class="header">
@@ -73,12 +72,11 @@
         </div>
       </div>
     </div>
-  </keep-alive>
 </template>
 
 <script>
 import { getAuth, updateProfile } from "firebase/auth";
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'vue-router'; 
 
@@ -272,6 +270,23 @@ export default {
       }
     },
 
+    async fetchUserFromUID(uid) {
+      try {
+        const userData = await this.getUserData(uid);
+        if (userData) {
+          this.userData = userData;
+          this.omeni = userData.omeni || '';
+          this.ime = userData.ime || '';
+          this.prezime = userData.prezime || '';
+          this.korisnickoIme = userData.korisnickoIme || '';
+        } else {
+          console.error('Podaci korisnika ne postoje.');
+        }
+      } catch (error) {
+        console.error('Greška prilikom dohvaćanja korisnika iz UID-a:', error.message);
+      }
+    },
+
     navigateTo(route) {
       this.$router.push(route);
     },
@@ -308,6 +323,7 @@ export default {
   },
 };
 </script>
+
 
 
 
