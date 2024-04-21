@@ -15,13 +15,13 @@
       <div class="content">
         <div class="form-container">
           <div class="profile-form">
-            <form>
+            <form @submit.prevent="saveQuotes">
               <div class="note-container">
-                <textarea class="textarea" id="notes" name="notes" rows="8" placeholder="Ovdje zapišite citate."></textarea>
+                <textarea v-model="quotes" :readonly="!editMode" class="textarea" id="quotes" name="quotes" rows="8" placeholder="Ovdje zapišite citate."></textarea>
               </div>
               <div class="button-group">
-                <button type="submit" class="save-button">Spremi</button>
-                <button class="edit-button rounded-button">Uredi</button>
+                <button v-if="!editMode" @click="editMode = true" class="edit-button rounded-button">Uredi</button>
+                <button v-else type="submit" class="save-button">Spremi</button>
                 <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
                 <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
               </div>
@@ -31,7 +31,7 @@
       </div>
       <div class="footer">
         <div class="footer-inner">
-            <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
+          <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
       </div>
     </div>
@@ -39,19 +39,71 @@
 </template>
 
 <script>
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+
 export default {
+  data() {
+    return {
+      quotes: "",
+      editMode: false,
+    };
+  },
+  async mounted() {
+    await this.loadQuotes();
+  },
   methods: {
-    navigateTo(route) {
-      if (route === 'Slike') {
-        this.$router.push('/Slike');
-      } else if (route === 'Videi') {
-        this.$router.push('/videi');
-      } else if (route === 'Biljeske') {
-        this.$router.push('/biljeske');
-      } else if (route === 'Dnevnik') {
-        this.$router.push('/dnevnik');
+    async navigateTo(route) {
+      if (route === "Slike") {
+        this.$router.push("/Slike");
+      } else if (route === "Videi") {
+        this.$router.push("/videi");
+      } else if (route === "Biljeske") {
+        this.$router.push("/biljeske");
+      } else if (route === "Dnevnik") {
+        this.$router.push("/dnevnik");
       } else {
         this.$router.push(`/${route}`);
+      }
+    },
+    async loadQuotes() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userRef = doc(db, "users", user.uid);
+          const userData = await getDoc(userRef);
+          if (userData.exists()) {
+            const userQuotes = userData.data().userData;
+            if (userQuotes && userQuotes.quotes) {
+              this.quotes = userQuotes.quotes;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Greška prilikom dohvaćanja citata:", error.message);
+      }
+    },
+    async saveQuotes() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userRef = doc(db, "users", user.uid);
+          await setDoc(userRef, {
+            userData: {
+              quotes: this.quotes,
+            },
+          }, { merge: true });
+          console.log("Citati su uspješno spremljeni u Firestore.");
+          alert("Citati su uspješno spremljeni!");
+          this.editMode = false; 
+        }
+      } catch (error) {
+        console.error("Greška prilikom spremanja citata:", error.message);
+        alert("Došlo je do greške prilikom spremanja citata.");
       }
     },
   },

@@ -19,6 +19,7 @@
 
 <script>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'; 
 import { app } from '../firebase';
 
 export default {
@@ -45,6 +46,25 @@ export default {
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.lozinka);
         console.log("Uspešna prijava. Korisnički ID:", userCredential.user.uid);
   
+        const db = getFirestore();
+        const userRef = doc(db, 'users', userCredential.user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+          await setDoc(userRef, {
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            korisnickoIme: "", 
+            ime: "",
+            prezime: "",
+            oMeni: ""
+          });
+
+          console.log('Novi korisnički dokument je stvoren u Firestore-u.');
+        } else {
+          console.log('Korisnički podaci iz Firestore-a:', userDoc.data());
+        }
+        
         localStorage.setItem('userStatus', '1');
         
         this.$router.push('/basepage');
@@ -61,8 +81,15 @@ export default {
       }
     },
   },
+  mounted() {
+    const userStatus = localStorage.getItem('userStatus');
+    if (userStatus === '1') {
+      console.log('Korisnik je već prijavljen.');
+    }
+  }
 };
 </script>
+
 
 
 <style scoped>

@@ -11,23 +11,24 @@
           <span class="icon" @click="navigateTo('Odjava')">Odjava</span>
         </div>
       </div>
-      <h4 class="naslov">Moj dnevnik</h4>
+      <h4 class="naslov">Moj dnevnik zahvalnosti</h4>
       <div class="date-container">
-        <p class="date-text">Unesite datum:</p>
-        <input type="date" class="datum-input" v-model="datum" @change="updateDatum">
+        <p class="date-text">Današnji datum:</p>
+        <input type="text" class="datum-input" v-model="datum" readonly>
       </div>
       <div class="content">
         <div class="form-container">
           <div class="profile-form">
-            <form>
+            <form @submit.prevent="saveDnevnik">
               <div class="note-container">
-                <textarea class="textarea" id="notes" name="notes" rows="8" placeholder="Ovdje zapiši zahvalnosti dana"></textarea>
+                <textarea v-model="dnevnik" :readonly="!editMode" class="textarea" id="notes" name="notes" rows="8" placeholder="Ovdje zapiši zahvalnosti dana"></textarea>
               </div>
               <div class="button-group">
-                <button type="submit" class="save-button">Spremi</button>
-                <button class="edit-button rounded-button">Uredi</button>
+                <button v-if="!editMode" @click="editMode = true" class="edit-button rounded-button">Uredi</button>
+                <button v-else type="submit" class="save-button">Spremi</button>
                 <button class="note-button rounded-button" @click="navigateTo('Biljeske')">Moje bilješke</button>
                 <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
+                <button class="quote-button rounded-button" @click="navigateTo('Zahvalnosti')">Sve moje zahvalnosti</button>
               </div>
             </form>
           </div>
@@ -35,7 +36,7 @@
       </div>
       <div class="footer">
         <div class="footer-inner">
-         <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
+          <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
       </div>
     </div>
@@ -43,38 +44,90 @@
 </template>
 
 <script>
+import { getAuth } from "firebase/auth";
+import { getFirestore, collection, query, orderBy, limit, getDocs, setDoc, doc } from "firebase/firestore";
+
 export default {
+  data() {
+    return {
+      dnevnik: "", 
+      datum: new Date().toISOString().slice(0, 10), 
+      editMode: false,
+      datumValid: true 
+    };
+  },
+  async mounted() {
+    await this.loadDnevnik();
+  },
   methods: {
-    navigateTo(route) {
-      if (route === 'Slike') {
-        this.$router.push('/Slike');
-      } else if (route === 'Videi') {
-        this.$router.push('/videi');
-      } else if (route === 'Biljeske') {
-        this.$router.push('/biljeske');
-      } else if (route === 'Dnevnik') {
-        this.$router.push('/dnevnik');
-      } else {
-        this.$router.push(`/${route}`);
+    async loadDnevnik() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userDnevnikRef = collection(db, "users", user.uid, "dnevnik");
+          const dnevnikQuery = query(userDnevnikRef, orderBy("datum", "desc"), limit(1));
+          const dnevnikSnapshot = await getDocs(dnevnikQuery);
+          dnevnikSnapshot.forEach((doc) => {
+            this.dnevnik = doc.data().dnevnik;
+            this.datum = doc.data().datum;
+          });
+        }
+      } catch (error) {
+        console.error("Greška prilikom dohvaćanja dnevnika:", error.message);
       }
     },
-  },
+    async saveDnevnik() {
+      try {
+        if (!this.datum) {
+          this.datumValid = false;
+          return; 
+        }
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userDnevnikRef = collection(db, "users", user.uid, "dnevnik");
+          const newDnevnikEntry = {
+            dnevnik: this.dnevnik,
+            datum: this.datum
+          };
+          await setDoc(doc(userDnevnikRef, this.generateRandomId()), newDnevnikEntry);
+          console.log("Dnevnik je uspješno spremljen u Firestore.");
+          alert("Dnevnik je uspješno spremljen!");
+          this.editMode = false; 
+        }
+      } catch (error) {
+        console.error("Greška prilikom spremanja dnevnika:", error.message);
+        alert("Došlo je do greške prilikom spremanja dnevnika.");
+      }
+    },
+    generateRandomId() {
+      return Math.random().toString(36).substr(2, 9);
+    },
+    async navigateTo(route) {
+      this.$router.push(route);
+    }
+  }
 };
 </script>
 
+
 <style scoped>
+.datum-input{
+  margin-right: 70%;
+}
 .date-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  margin-right: 1000px;
 }
 
 .date-text {
   font-size: 19px;
   color: #509ff4;
-  margin-top: 5px;
 }
 
 .date-input {
@@ -128,7 +181,7 @@ export default {
 .naslov {
   font-weight: bold;
   text-align: left;
-  margin-top: -20px;
+  margin-top: 5px;
   color: #509ff4;
 }
 
@@ -195,4 +248,7 @@ export default {
   background-color: #3c88d1;
 }
 
+.error-message {
+  color: red;
+}
 </style>

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, updateProfile } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB7v3U3gqZnT3sbG3zMFBbk3CPTBx9iWeg",
@@ -14,6 +15,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const updateProfileFn = updateProfile;
 
-export { app, auth, db, updateProfileFn as updateProfile };
+export {
+  app,
+  auth,
+  db,
+  storage,
+  storageRef, 
+  uploadBytesResumable,
+  getDownloadURL,
+  updateProfileFn as updateProfile
+};

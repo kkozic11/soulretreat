@@ -6,5 +6,3 @@ import { app } from './firebase';
 createApp(App)
   .use(router)
   .mount('#app');
-
-app;

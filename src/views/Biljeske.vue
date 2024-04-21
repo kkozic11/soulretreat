@@ -15,13 +15,21 @@
       <div class="content">
         <div class="form-container">
           <div class="profile-form">
-            <form>
+            <form @submit.prevent="saveNotes">
               <div class="note-container">
-                <textarea class="textarea" id="notes" name="notes" rows="8" placeholder="Upišite svoje dnevne bilješke, inspiracije i pozitivne misli svakoga dana..."></textarea>
+                <textarea
+                  v-model="notes"
+                  class="textarea"
+                  id="notes"
+                  name="notes"
+                  rows="8"
+                  :readonly="!editMode"
+                  placeholder="Upišite svoje dnevne bilješke, inspiracije i pozitivne misli svakoga dana..."
+                ></textarea>
               </div>
               <div class="button-group">
-                <button type="submit" class="save-button">Spremi</button>
-                <button class="edit-button rounded-button">Uredi</button>
+                <button v-if="!editMode" @click="editMode = true" class="edit-button rounded-button">Uredi</button>
+                <button v-else type="submit" class="save-button">Spremi</button>
                 <button class="gratitude-button rounded-button" @click="navigateTo('Dnevnik')">Moj dnevnik zahvalnosti</button>
                 <button class="quote-button rounded-button" @click="navigateTo('MojiCitati')">Moji citati</button>
               </div>
@@ -31,7 +39,7 @@
       </div>
       <div class="footer">
         <div class="footer-inner">
-           <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
+          <div class="footer-text"><router-link to="/basepage">SoulRetreat.</router-link></div>
         </div>
       </div>
     </div>
@@ -39,24 +47,76 @@
 </template>
 
 <script>
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+
 export default {
+  data() {
+    return {
+      notes: "",
+      editMode: false,
+    };
+  },
+  async mounted() {
+    await this.loadNotes();
+  },
   methods: {
-    navigateTo(route) {
-      if (route === 'Slike') {
-        this.$router.push('/Slike');
-      } else if (route === 'Videi') {
-        this.$router.push('/videi');
-      } else if (route === 'MojiCitati') {
-        this.$router.push('/mojicitati');
-      } else if (route === 'Dnevnik') {
-        this.$router.push('/dnevnik');
+    async navigateTo(route) {
+      if (route === "Slike") {
+        this.$router.push("/Slike");
+      } else if (route === "Videi") {
+        this.$router.push("/videi");
+      } else if (route === "MojiCitati") {
+        this.$router.push("/mojicitati");
+      } else if (route === "Dnevnik") {
+        this.$router.push("/dnevnik");
       } else {
         this.$router.push(`/${route}`);
+      }
+    },
+    async loadNotes() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userRef = doc(db, "users", user.uid);
+          const userData = await getDoc(userRef);
+          if (userData.exists()) {
+            const userDataObject = userData.data();
+            if (userDataObject && userDataObject.userData && userDataObject.userData.notes) {
+              this.notes = userDataObject.userData.notes;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Greška prilikom dohvaćanja bilješki:", error.message);
+      }
+    },
+    async saveNotes() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userRef = doc(db, "users", user.uid);
+          await setDoc(userRef, {
+            userData: {
+              notes: this.notes,
+            },
+          });
+          console.log("Bilješke su uspješno spremljene u Firestore.");
+          alert("Bilješke su uspješno spremljene!");
+        }
+      } catch (error) {
+        console.error("Greška prilikom spremanja bilješki:", error.message);
+        alert("Došlo je do greške prilikom spremanja bilješki.");
       }
     },
   },
 };
 </script>
+
 
 <style scoped>
 .note-container {

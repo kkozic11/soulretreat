@@ -13,7 +13,7 @@
       <div class="input-group">
         <label for="korisnickoIme" class="label"> Korisničko ime:</label>
         <input type="text" v-model="korisnickoIme" class="input-field" id="korisnickoIme" autocomplete="username" @change="checkIfUserExists"/>
-        <p v-if="usernameExists" class="error-message">Korisnik s ovim korisničkim imenom ili mailom već postoji.</p>
+        <p v-if="usernameExists" class="error-message">Korisnik s ovim korisničkim imenom već postoji.</p>
       </div>
       <div class="input-group">
         <label for="email" class="label" id="email-label">Email:</label>
@@ -28,11 +28,12 @@
         <label for="potvrdaLozinke" class="label"> Potvrdi lozinku:</label>
         <input type="password" v-model="potvrdaLozinke" class="input-field" id="potvrdaLozinke" autocomplete="new-password"/>
       </div>
-      <button type="submit" :disabled="usernameExists" @click="goToLoginPage">Registriraj me</button>
+      <button type="submit" :disabled="usernameExists" @click="submitForm">Registriraj me</button>
       <p class="reg-text">Korisnički račun već imate? <router-link to="/login" class="login">Prijavite se.</router-link></p>
     </form>
   </div>
 </template>
+
 
 <script>
 import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
@@ -55,57 +56,45 @@ export default {
   methods: {
     async submitForm() {
       event.preventDefault();
-      console.log('Pokušaj registracije...');
 
- 
       this.errorMessage = '';
       this.emailError = '';
       this.usernameExists = false;
 
       if (!this.areAllFieldsFilled()) {
         this.errorMessage = 'Molimo ispunite sva polja.';
-        console.log('Nisu ispunjena sva polja.');
         return;
       }
 
       if (this.lozinka.length < 6) {
         this.errorMessage = 'Lozinka mora sadržavati najmanje 6 znakova.';
-        console.log('Lozinka mora sadržavati najmanje 6 znakova.');
         return;
       }
 
       if (this.lozinka !== this.potvrdaLozinke) {
         this.errorMessage = 'Lozinke se ne podudaraju.';
-        console.log('Lozinke se ne podudaraju.');
         return;
       }
 
       try {
         const auth = getAuth();
 
-        // Provjera postoji li korisnik s ovom e-mail adresom
         const emailExists = await fetchSignInMethodsForEmail(auth, this.email);
         if (emailExists.length > 0) {
           this.errorMessage = 'Korisnik s ovom e-mail adresom već postoji.';
-          console.log('Korisnik s ovom e-mail adresom već postoji.');
           return;
         }
 
         const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
-        console.log('Provjerava postojanje korisničkog imena...');
-        console.log('Korisničko ime postoji:', usernameExists);
 
         if (usernameExists) {
-          console.log('Korisnik s ovim korisničkim imenom već postoji.');
           this.usernameExists = true;
           return;
         }
 
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.lozinka);
-        console.log('Registracija uspješna. Korisnički ID:', userCredential.user.uid);
 
-        await this.saveUserData(userCredential.user.uid);
-
+        await this.saveUserData(userCredential.user.uid); 
         this.goToLoginPage();
         
       } catch (error) {
@@ -121,7 +110,6 @@ export default {
         }
         this.errorMessage = errorMessage;
       }
-
     },
     async fetchUserByUsername(username) {
       try {
@@ -153,29 +141,6 @@ export default {
         this.errorMessage = errorMessage;
       }
     },
-    async checkIfUserExists() {
-      if (!this.areAllFieldsFilled()) {
-        return;
-      }
-
-      if (!this.isValidEmail(this.email)) {
-        this.emailError = 'Unesite ispravnu e-mail adresu.';
-        return;
-      }
-
-      const emailExists = await fetchSignInMethodsForEmail(getAuth(), this.email);
-      const usernameExists = await this.fetchUserByUsername(this.korisnickoIme);
-      
-      if (emailExists.length > 0 || usernameExists) {
-        this.usernameExists = true;
-      } else {
-        this.usernameExists = false;
-      }
-    },
-    isValidEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    },
     areAllFieldsFilled() {
       return this.ime && this.prezime && this.korisnickoIme && this.email && this.lozinka && this.potvrdaLozinke;
     },
@@ -185,6 +150,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style scoped>
