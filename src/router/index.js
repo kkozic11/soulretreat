@@ -72,7 +72,7 @@ const routes = [
   {
     path: '/profil',
     name: 'Profil',
-    component: Profil
+    component: Profil,
   },
   {
     path: '/login',
@@ -92,17 +92,6 @@ const router = createRouter({
   scrollBehavior() {
     return { x: 0, y: 0 };
   },
-});
-
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = localStorage.getItem('userData');
-
-  if (requiresAuth && !isAuthenticated) {
-    next('/login');
-  } else {
-    next();
-  }
 });
 
 export default router;
